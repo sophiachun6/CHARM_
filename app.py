@@ -12,20 +12,27 @@ app_ui = ui.page_fluid(
     # -------------------------------------------------
     ui.tags.script("""
     (function () {
+
       const hash = window.location.hash.substring(1);
       const params = new URLSearchParams(hash);
 
       function send() {
+
         if (window.Shiny && Shiny.setInputValue) {
-          ["token","pid","fhir","obs"].forEach(k=>{
+
+          ["token","pid","fhir","obs"].forEach(k => {
             Shiny.setInputValue(k, params.get(k));
           });
+
         } else {
+
           setTimeout(send, 300);
+
         }
       }
 
       send();
+
     })();
     """),
 
@@ -34,10 +41,15 @@ app_ui = ui.page_fluid(
     # -------------------------------------------------
     ui.tags.style("""
 
+    /* =========================
+       BODY
+    ========================== */
+
     body{
-        background:linear-gradient(to bottom right,#eef2f7,#f9fbfd);
+        background:#f4f7fb;
         font-family:Arial, Helvetica, sans-serif;
         padding:20px;
+        color:#1f2937;
     }
 
     #token,#pid,#fhir,#obs{
@@ -49,15 +61,26 @@ app_ui = ui.page_fluid(
     ========================== */
 
     .main-title{
-        font-size:36px;
-        font-weight:700;
-        color:#1f2937;
-        margin-bottom:5px;
+        font-size:38px;
+        font-weight:800;
+        margin-bottom:6px;
     }
 
     .subtitle{
         color:#6b7280;
-        margin-bottom:25px;
+        margin-bottom:28px;
+        font-size:17px;
+    }
+
+    /* =========================
+       CUSTOM SIDEBAR
+    ========================== */
+
+    .custom-sidebar{
+        background:white;
+        border-radius:18px;
+        padding:22px;
+        box-shadow:0 6px 18px rgba(0,0,0,.08);
     }
 
     /* =========================
@@ -66,31 +89,16 @@ app_ui = ui.page_fluid(
 
     .card{
         background:white;
-        border-radius:18px;
-        padding:24px;
+        border-radius:20px;
+        padding:26px;
+        margin-bottom:24px;
         box-shadow:0 6px 18px rgba(0,0,0,.08);
-        margin-bottom:20px;
         transition:.2s;
     }
 
     .card:hover{
         transform:translateY(-2px);
         box-shadow:0 10px 24px rgba(0,0,0,.12);
-    }
-
-    /* =========================
-       SIDEBAR
-    ========================== */
-
-    .sidebar{
-        background:white;
-        border-radius:18px;
-        padding:20px;
-        box-shadow:0 6px 18px rgba(0,0,0,.08);
-    }
-
-    .sidebar h4{
-        margin-bottom:20px;
     }
 
     /* =========================
@@ -102,10 +110,16 @@ app_ui = ui.page_fluid(
     }
 
     .risk-number{
-        font-size:72px;
+        font-size:76px;
         font-weight:800;
         line-height:1;
         margin-top:10px;
+    }
+
+    .risk-label{
+        font-size:22px;
+        font-weight:700;
+        margin-bottom:8px;
     }
 
     .risk-low{
@@ -118,12 +132,6 @@ app_ui = ui.page_fluid(
 
     .risk-high{
         color:#e53935;
-    }
-
-    .risk-label{
-        font-size:22px;
-        font-weight:700;
-        margin-top:10px;
     }
 
     .risk-bar{
@@ -173,17 +181,25 @@ app_ui = ui.page_fluid(
     }
 
     /* =========================
-       FHIR
+       FHIR JSON
     ========================== */
 
     .fhir-box{
-        max-height:300px;
+        max-height:320px;
         overflow:auto;
         background:#111827;
         color:#e5e7eb;
-        border-radius:12px;
-        padding:15px;
+        border-radius:14px;
+        padding:16px;
         font-size:13px;
+    }
+
+    /* =========================
+       RADIO BUTTON SPACING
+    ========================== */
+
+    .form-check{
+        margin-right:18px;
     }
 
     """),
@@ -197,11 +213,14 @@ app_ui = ui.page_fluid(
     ui.input_text("obs",""),
 
     # -------------------------------------------------
-    # Title
+    # TITLE
     # -------------------------------------------------
     ui.div(
-        ui.div("CHARM Sepsis Mortality Predictor",
-               class_="main-title"),
+
+        ui.div(
+            "CHARM Sepsis Mortality Predictor",
+            class_="main-title"
+        ),
 
         ui.div(
             "AI-assisted in-hospital mortality risk estimation",
@@ -210,20 +229,26 @@ app_ui = ui.page_fluid(
     ),
 
     # -------------------------------------------------
-    # Main Layout
+    # MAIN LAYOUT
     # -------------------------------------------------
     ui.layout_sidebar(
 
-        # =========================
-        # Sidebar
-        # =========================
+        # =================================================
+        # SIDEBAR
+        # =================================================
         ui.sidebar(
 
             ui.div(
-                {"class":"sidebar"},
+
+                {"class":"custom-sidebar"},
 
                 ui.h4("Clinical Factors"),
 
+                ui.hr(),
+
+                # ---------------------------------------------
+                # Chills
+                # ---------------------------------------------
                 ui.input_radio_buttons(
                     "chills",
                     "No Chills",
@@ -231,6 +256,9 @@ app_ui = ui.page_fluid(
                     inline=True
                 ),
 
+                # ---------------------------------------------
+                # Hypothermia
+                # ---------------------------------------------
                 ui.input_radio_buttons(
                     "hypothermia",
                     "Hypothermia",
@@ -240,6 +268,9 @@ app_ui = ui.page_fluid(
 
                 ui.p("Temperature < 36°C"),
 
+                # ---------------------------------------------
+                # Anemia
+                # ---------------------------------------------
                 ui.input_radio_buttons(
                     "anemia",
                     "Anemia",
@@ -249,15 +280,19 @@ app_ui = ui.page_fluid(
 
                 ui.p("RBC < 4M/uL"),
 
+                # ---------------------------------------------
+                # RDW
+                # ---------------------------------------------
                 ui.input_radio_buttons(
                     "rdw",
-                    "RDW",
+                    "RDW > 14.5%",
                     {"No":"No","Yes":"Yes"},
                     inline=True
                 ),
 
-                ui.p("RDW > 14.5%"),
-
+                # ---------------------------------------------
+                # Malignancy
+                # ---------------------------------------------
                 ui.input_radio_buttons(
                     "malignancy",
                     "Malignancy",
@@ -269,18 +304,19 @@ app_ui = ui.page_fluid(
             )
         ),
 
-        # =========================
-        # Main Content
-        # =========================
+        # =================================================
+        # MAIN CONTENT
+        # =================================================
         ui.div(
 
-            # -------------------------
-            # Risk Card
-            # -------------------------
+            # =============================================
+            # RISK CARD
+            # =============================================
             ui.div(
+
                 {"class":"card risk-center"},
 
-                ui.h3("Estimated Mortality Risk"),
+                ui.h3("Estimated In-hospital Mortality Risk"),
 
                 ui.output_ui("risk_label"),
 
@@ -301,19 +337,16 @@ app_ui = ui.page_fluid(
                 ui.br(),
                 ui.br(),
 
-                ui.div(
-                    "Produced by Dr. Chin-Chieh Wu"
-                ),
+                ui.div("Produced by Dr. Chin-Chieh Wu"),
 
-                ui.div(
-                    "SMART on FHIR UI by Howard"
-                )
+                ui.div("SMART on FHIR UI by Howard")
             ),
 
-            # -------------------------
-            # Factors Card
-            # -------------------------
+            # =============================================
+            # FACTORS CARD
+            # =============================================
             ui.div(
+
                 {"class":"card"},
 
                 ui.h4("Contributing Clinical Factors"),
@@ -321,16 +354,18 @@ app_ui = ui.page_fluid(
                 ui.output_ui("factor_list")
             ),
 
-            # -------------------------
-            # FHIR Card
-            # -------------------------
+            # =============================================
+            # FHIR CARD
+            # =============================================
             ui.div(
+
                 {"class":"card"},
 
                 ui.h4("FHIR Patient & Observation Data"),
 
                 ui.div(
                     {"class":"fhir-box"},
+
                     ui.tags.pre(
                         ui.output_text("patient_info")
                     )
@@ -364,9 +399,9 @@ def server(input, output, session):
     def fhir_data():
 
         if not (
-            input.token() and
-            input.pid() and
-            input.fhir()
+            input.token()
+            and input.pid()
+            and input.fhir()
         ):
             return {}
 
@@ -378,19 +413,37 @@ def server(input, output, session):
 
         data = {}
 
-        data["patient"] = requests.get(
-            f"{input.fhir()}/Patient/{input.pid()}",
-            headers=headers,
-            verify=False
-        ).json()
+        try:
 
-        if input.obs():
-
-            data["observation"] = requests.get(
-                input.obs(),
+            # -----------------------------------------
+            # Patient
+            # -----------------------------------------
+            patient_response = requests.get(
+                f"{input.fhir()}/Patient/{input.pid()}",
                 headers=headers,
-                verify=False
-            ).json()
+                verify=False,
+                timeout=10
+            )
+
+            data["patient"] = patient_response.json()
+
+            # -----------------------------------------
+            # Observation
+            # -----------------------------------------
+            if input.obs():
+
+                obs_response = requests.get(
+                    input.obs(),
+                    headers=headers,
+                    verify=False,
+                    timeout=10
+                )
+
+                data["observation"] = obs_response.json()
+
+        except Exception as e:
+
+            data["error"] = str(e)
 
         return data
 
@@ -400,13 +453,14 @@ def server(input, output, session):
     @output
     @render.text
     def patient_info():
+
         return json.dumps(
             fhir_data(),
             indent=2
         )
 
     # -------------------------------------------------
-    # INIT UI FROM FHIR
+    # INIT FROM FHIR
     # -------------------------------------------------
     @reactive.Effect
     def init_ui_from_fhir():
@@ -417,6 +471,7 @@ def server(input, output, session):
             return
 
         defaults = {
+
             "chills":"No",
             "hypothermia":"No",
             "anemia":"No",
@@ -432,18 +487,27 @@ def server(input, output, session):
                 "coding",[{}]
             )[0].get("code")
 
+            # -----------------------------------------
+            # Chills
+            # -----------------------------------------
             if (
                 code=="chills"
                 and c.get("valueInteger")==1
             ):
                 defaults["chills"]="Yes"
 
+            # -----------------------------------------
+            # Malignancy
+            # -----------------------------------------
             elif (
                 code=="malignancy"
                 and c.get("valueInteger")==1
             ):
                 defaults["malignancy"]="Yes"
 
+            # -----------------------------------------
+            # RBC
+            # -----------------------------------------
             elif (
                 code=="789-8"
                 and c.get(
@@ -452,6 +516,9 @@ def server(input, output, session):
             ):
                 defaults["anemia"]="Yes"
 
+            # -----------------------------------------
+            # RDW
+            # -----------------------------------------
             elif (
                 code=="788-0"
                 and c.get(
@@ -460,6 +527,9 @@ def server(input, output, session):
             ):
                 defaults["rdw"]="Yes"
 
+            # -----------------------------------------
+            # Temperature
+            # -----------------------------------------
             elif (
                 code=="8310-5"
                 and c.get(
@@ -491,7 +561,6 @@ def server(input, output, session):
             input.rdw()=="Yes",
 
             input.malignancy()=="Yes"
-
         ])
 
     # -------------------------------------------------
@@ -517,7 +586,7 @@ def server(input, output, session):
         )
 
     # -------------------------------------------------
-    # LABEL
+    # RISK LABEL
     # -------------------------------------------------
     @output
     @render.ui
@@ -525,14 +594,14 @@ def server(input, output, session):
 
         p = CHARM_TABLE.get(score(),0)
 
-        if p<5:
+        if p < 5:
 
             return ui.div(
                 "VERY LOW RISK",
                 class_="risk-label risk-low"
             )
 
-        elif p<20:
+        elif p < 20:
 
             return ui.div(
                 "MODERATE RISK",
@@ -555,9 +624,10 @@ def server(input, output, session):
 
         p = CHARM_TABLE.get(score(),0)
 
-        left = min(p/40*100,100)
+        left = min(p / 40 * 100, 100)
 
         return ui.div(
+
             {"class":"risk-bar"},
 
             ui.div({
@@ -590,11 +660,12 @@ def server(input, output, session):
 
         for label,val in factors:
 
-            active = val=="Yes"
+            active = val == "Yes"
 
             pills.append(
 
                 ui.span(
+
                     label,
 
                     class_=(
