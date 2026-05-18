@@ -184,15 +184,72 @@ app_ui = ui.page_fluid(
        FHIR JSON
     ========================== */
 
-    .fhir-box{
-        max-height:320px;
-        overflow:auto;
-        background:#111827;
-        color:#e5e7eb;
-        border-radius:14px;
-        padding:16px;
-        font-size:13px;
-    }
+    /* =========================
+   FHIR JSON
+========================== */
+
+.fhir-box{
+
+    max-height:320px;
+
+    overflow:auto;
+
+    background:#0f172a;
+
+    border-radius:14px;
+
+    padding:18px;
+
+    font-size:13px;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+/* JSON TEXT */
+
+.fhir-box pre{
+
+    color:#f8fafc !important;
+
+    margin:0;
+
+    white-space:pre-wrap;
+
+    word-break:break-word;
+
+    font-family:
+        Consolas,
+        Monaco,
+        "Courier New",
+        monospace;
+
+    line-height:1.6;
+}
+
+/* Scrollbar */
+
+.fhir-box::-webkit-scrollbar{
+
+    width:10px;
+}
+
+.fhir-box::-webkit-scrollbar-track{
+
+    background:#111827;
+}
+
+.fhir-box::-webkit-scrollbar-thumb{
+
+    background:#334155;
+
+    border-radius:999px;
+}
+
+.fhir-box::-webkit-scrollbar-thumb:hover{
+
+    background:#475569;
+}
 
     /* =========================
        RADIO BUTTON SPACING
