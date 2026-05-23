@@ -7,9 +7,10 @@ import requests
 
 app_ui = ui.page_fluid(
 
-    # -------------------------------------------------
+    # =================================================
     # URL HASH → SHINY INPUT
-    # -------------------------------------------------
+    # =================================================
+
     ui.tags.script("""
     (function () {
 
@@ -39,14 +40,15 @@ app_ui = ui.page_fluid(
     # =================================================
     # CSS
     # =================================================
+
     ui.tags.style("""
 
-    /* =========================
+    /* =================================================
        BODY
-    ========================== */
+    ================================================= */
 
     body{
-        background:#f4f7fb;
+        background:#f3f6fb;
         font-family:Arial, Helvetica, sans-serif;
         padding:20px;
         color:#1f2937;
@@ -56,55 +58,49 @@ app_ui = ui.page_fluid(
         display:none !important;
     }
 
-    /* =========================
+    /* =================================================
        TITLE
-    ========================== */
+    ================================================= */
 
     .main-title{
-        font-size:42px;
-        font-weight:800;
+        font-size:46px;
+        font-weight:900;
         margin-bottom:6px;
-        color:#111827;
+        color:#0f172a;
     }
 
     .subtitle{
-        color:#6b7280;
+        color:#64748b;
         margin-bottom:28px;
-        font-size:17px;
+        font-size:18px;
     }
 
-    /* =========================
+    /* =================================================
        SIDEBAR
-    ========================== */
+    ================================================= */
 
     .custom-sidebar{
         background:white;
         border-radius:22px;
         padding:24px;
-        box-shadow:0 6px 18px rgba(0,0,0,.08);
+        box-shadow:0 8px 24px rgba(0,0,0,.08);
     }
 
-    /* =========================
+    /* =================================================
        CARD
-    ========================== */
+    ================================================= */
 
     .card{
         background:white;
-        border-radius:22px;
-        padding:28px;
+        border-radius:24px;
+        padding:30px;
         margin-bottom:24px;
-        box-shadow:0 6px 18px rgba(0,0,0,.08);
-        transition:.2s;
+        box-shadow:0 8px 24px rgba(0,0,0,.08);
     }
 
-    .card:hover{
-        transform:translateY(-2px);
-        box-shadow:0 10px 24px rgba(0,0,0,.12);
-    }
-
-    /* =========================
+    /* =================================================
        PATIENT HEADER
-    ========================== */
+    ================================================= */
 
     .patient-header{
         background:linear-gradient(
@@ -113,42 +109,48 @@ app_ui = ui.page_fluid(
             #1d4ed8
         );
         color:white;
-        border-radius:22px;
-        padding:30px;
+        border-radius:24px;
+        padding:32px;
         margin-bottom:24px;
-        box-shadow:0 10px 24px rgba(0,0,0,.15);
+        box-shadow:0 12px 28px rgba(0,0,0,.15);
     }
 
     .patient-name{
-        font-size:34px;
-        font-weight:800;
+        font-size:36px;
+        font-weight:900;
         margin-bottom:10px;
     }
 
     .patient-meta{
         font-size:16px;
-        opacity:.9;
+        opacity:.92;
     }
 
-    /* =========================
+    .last-update{
+        margin-top:12px;
+        font-size:14px;
+        opacity:.8;
+    }
+
+    /* =================================================
        RISK
-    ========================== */
+    ================================================= */
 
     .risk-center{
         text-align:center;
     }
 
     .risk-number{
-        font-size:92px;
-        font-weight:800;
+        font-size:96px;
+        font-weight:900;
         line-height:1;
         margin-top:10px;
         margin-bottom:12px;
     }
 
     .risk-label{
-        font-size:24px;
-        font-weight:700;
+        font-size:26px;
+        font-weight:800;
         margin-bottom:8px;
     }
 
@@ -165,15 +167,15 @@ app_ui = ui.page_fluid(
     }
 
     .risk-bar{
-        height:18px;
+        height:20px;
         border-radius:999px;
         background:linear-gradient(
             to right,
             #22c55e,
-            #facc15,
+            #eab308,
             #ef4444
         );
-        margin-top:30px;
+        margin-top:28px;
         position:relative;
         overflow:hidden;
     }
@@ -181,58 +183,67 @@ app_ui = ui.page_fluid(
     .risk-marker{
         position:absolute;
         top:-5px;
-        width:5px;
-        height:28px;
+        width:6px;
+        height:30px;
         background:black;
-        border-radius:10px;
+        border-radius:999px;
     }
 
-    /* =========================
-       CLINICAL NOTE
-    ========================== */
+    /* =================================================
+       AI NOTE
+    ================================================= */
 
     .clinical-note{
-        margin-top:22px;
+        margin-top:24px;
+        padding:20px;
+        border-radius:18px;
         background:#f8fafc;
-        padding:18px;
-        border-radius:16px;
-        color:#374151;
+        color:#334155;
         font-size:15px;
-        line-height:1.6;
+        line-height:1.7;
     }
 
-    /* =========================
+    /* =================================================
        FINDINGS
-    ========================== */
+    ================================================= */
 
     .finding-item{
+        border-radius:16px;
+        padding:16px;
+        margin-bottom:14px;
         display:flex;
         align-items:center;
-        padding:14px;
-        border-radius:14px;
-        margin-bottom:12px;
+        gap:12px;
+        font-weight:700;
         font-size:15px;
-        font-weight:600;
     }
 
     .finding-positive{
         background:#fef2f2;
         color:#b91c1c;
+        border:1px solid #fecaca;
     }
 
     .finding-negative{
         background:#f8fafc;
         color:#64748b;
+        border:1px solid #e2e8f0;
     }
 
     .finding-icon{
-        font-size:18px;
-        margin-right:12px;
+        font-size:20px;
     }
 
-    /* =========================
+    .finding-value{
+        margin-top:4px;
+        font-size:13px;
+        font-weight:500;
+        opacity:.9;
+    }
+
+    /* =================================================
        SUMMARY TABLE
-    ========================== */
+    ================================================= */
 
     .summary-table{
         width:100%;
@@ -240,24 +251,32 @@ app_ui = ui.page_fluid(
     }
 
     .summary-table td{
-        padding:16px;
+        padding:18px;
         border-bottom:1px solid #e5e7eb;
         font-size:15px;
     }
 
     .summary-label{
-        color:#6b7280;
         width:40%;
-        font-weight:600;
+        color:#64748b;
+        font-weight:700;
     }
 
     .summary-value{
-        font-weight:700;
+        font-weight:800;
         color:#111827;
     }
 
-    .abnormal{
+    .summary-normal{
+        color:#111827;
+    }
+
+    .summary-abnormal{
         color:#dc2626;
+    }
+
+    .summary-high{
+        color:#ea580c;
     }
 
     """),
@@ -289,14 +308,14 @@ app_ui = ui.page_fluid(
     ),
 
     # =================================================
-    # LAYOUT
+    # MAIN LAYOUT
     # =================================================
 
     ui.layout_sidebar(
 
-        # =============================================
+        # -------------------------------------------------
         # SIDEBAR
-        # =============================================
+        # -------------------------------------------------
 
         ui.sidebar(
 
@@ -312,15 +331,15 @@ app_ui = ui.page_fluid(
             )
         ),
 
-        # =============================================
+        # -------------------------------------------------
         # MAIN CONTENT
-        # =============================================
+        # -------------------------------------------------
 
         ui.div(
 
-            # -----------------------------------------
+            # =============================================
             # PATIENT HEADER
-            # -----------------------------------------
+            # =============================================
 
             ui.div(
 
@@ -329,9 +348,9 @@ app_ui = ui.page_fluid(
                 ui.output_ui("patient_header")
             ),
 
-            # -----------------------------------------
+            # =============================================
             # RISK CARD
-            # -----------------------------------------
+            # =============================================
 
             ui.div(
 
@@ -365,9 +384,9 @@ app_ui = ui.page_fluid(
                 ui.div("SMART on FHIR UI by Howard")
             ),
 
-            # -----------------------------------------
+            # =============================================
             # CLINICAL SUMMARY
-            # -----------------------------------------
+            # =============================================
 
             ui.div(
 
@@ -401,9 +420,9 @@ CHARM_TABLE = {
 
 def server(input, output, session):
 
-    # -------------------------------------------------
-    # FETCH FHIR
-    # -------------------------------------------------
+    # =================================================
+    # FETCH FHIR DATA
+    # =================================================
 
     @reactive.Calc
     def fhir_data():
@@ -428,8 +447,6 @@ def server(input, output, session):
 
         try:
 
-            # PATIENT
-
             patient_response = requests.get(
 
                 f"{input.fhir()}/Patient/{input.pid()}",
@@ -442,8 +459,6 @@ def server(input, output, session):
             )
 
             data["patient"] = patient_response.json()
-
-            # OBSERVATION
 
             if input.obs():
 
@@ -466,26 +481,30 @@ def server(input, output, session):
 
         return data
 
-    # -------------------------------------------------
-    # INITIALIZE CLINICAL FACTORS
-    # -------------------------------------------------
+    # =================================================
+    # EXTRACT LAB VALUES
+    # =================================================
 
     @reactive.Calc
-    def factor_state():
+    def lab_values():
 
-        obs = fhir_data().get("observation")
+        obs = fhir_data().get("observation", {})
 
-        defaults = {
+        result = {
 
-            "chills":"No",
-            "hypothermia":"No",
-            "anemia":"No",
-            "rdw":"No",
-            "malignancy":"No"
+            "temperature": None,
+            "rbc": None,
+            "rdw": None,
+            "last_updated": "Unknown"
         }
 
-        if not obs or "component" not in obs:
-            return defaults
+        result["last_updated"] = obs.get(
+            "lastUpdated",
+            "Unknown"
+        )
+
+        if "component" not in obs:
+            return result
 
         for c in obs["component"]:
 
@@ -495,78 +514,76 @@ def server(input, output, session):
                 "coding",[{}]
             )[0].get("code")
 
-            # CHILLS
+            # TEMPERATURE
 
-            if (
-                code=="chills"
-                and c.get("valueInteger")==1
-            ):
-                defaults["chills"]="Yes"
+            if code == "8310-5":
 
-            # MALIGNANCY
-
-            elif (
-                code=="malignancy"
-                and c.get("valueInteger")==1
-            ):
-                defaults["malignancy"]="Yes"
+                result["temperature"] = c.get(
+                    "valueQuantity",{}
+                ).get("value")
 
             # RBC
 
-            elif (
-                code=="789-8"
-                and c.get(
+            elif code == "789-8":
+
+                result["rbc"] = c.get(
                     "valueQuantity",{}
-                ).get("value",999)<4
-            ):
-                defaults["anemia"]="Yes"
+                ).get("value")
 
             # RDW
 
-            elif (
-                code=="788-0"
-                and c.get(
+            elif code == "788-0":
+
+                result["rdw"] = c.get(
                     "valueQuantity",{}
-                ).get("value",0)>14.5
-            ):
-                defaults["rdw"]="Yes"
+                ).get("value")
 
-            # TEMPERATURE
+        return result
 
-            elif (
-                code=="8310-5"
-                and c.get(
-                    "valueQuantity",{}
-                ).get("value",99)<36
-            ):
-                defaults["hypothermia"]="Yes"
+    # =================================================
+    # FACTOR STATE
+    # =================================================
 
-        return defaults
+    @reactive.Calc
+    def factor_state():
 
-    # -------------------------------------------------
+        labs = lab_values()
+
+        return {
+
+            "hypothermia":
+            labs["temperature"] is not None
+            and labs["temperature"] < 36,
+
+            "anemia":
+            labs["rbc"] is not None
+            and labs["rbc"] < 4,
+
+            "rdw":
+            labs["rdw"] is not None
+            and labs["rdw"] > 14.5
+        }
+
+    # =================================================
     # SCORE
-    # -------------------------------------------------
+    # =================================================
 
     def score():
 
-        factors = factor_state()
+        f = factor_state()
 
         return sum([
 
-            factors["chills"]=="Yes",
+            f["hypothermia"],
 
-            factors["hypothermia"]=="Yes",
+            f["anemia"],
 
-            factors["anemia"]=="Yes",
-
-            factors["rdw"]=="Yes",
-
-            factors["malignancy"]=="Yes"
+            f["rdw"]
         ])
 
-    # -------------------------------------------------
+    # =================================================
     # PATIENT HEADER
-    # -------------------------------------------------
+    # =================================================
 
     @output
     @render.ui
@@ -575,6 +592,8 @@ def server(input, output, session):
         data = fhir_data()
 
         patient = data.get("patient", {})
+
+        labs = lab_values()
 
         try:
 
@@ -590,8 +609,6 @@ def server(input, output, session):
 
         gender = patient.get("gender", "Unknown")
 
-        patient_id = input.pid()
-
         return ui.div(
 
             ui.div(
@@ -600,14 +617,19 @@ def server(input, output, session):
             ),
 
             ui.div(
-                f"Patient ID: {patient_id} • Gender: {gender}",
+                f"Patient ID: {input.pid()} • Gender: {gender}",
                 class_="patient-meta"
+            ),
+
+            ui.div(
+                f"Last Updated: {labs['last_updated']}",
+                class_="last-update"
             )
         )
 
-    # -------------------------------------------------
+    # =================================================
     # RISK NUMBER
-    # -------------------------------------------------
+    # =================================================
 
     @output
     @render.ui
@@ -630,9 +652,9 @@ def server(input, output, session):
             class_=f"risk-number {cls}"
         )
 
-    # -------------------------------------------------
+    # =================================================
     # RISK LABEL
-    # -------------------------------------------------
+    # =================================================
 
     @output
     @render.ui
@@ -661,9 +683,9 @@ def server(input, output, session):
                 class_="risk-label risk-high"
             )
 
-    # -------------------------------------------------
+    # =================================================
     # RISK BAR
-    # -------------------------------------------------
+    # =================================================
 
     @output
     @render.ui
@@ -685,9 +707,9 @@ def server(input, output, session):
             })
         )
 
-    # -------------------------------------------------
-    # CLINICAL NOTE
-    # -------------------------------------------------
+    # =================================================
+    # AI NOTE
+    # =================================================
 
     @output
     @render.ui
@@ -699,21 +721,21 @@ def server(input, output, session):
 
             note = (
                 "Patient currently demonstrates low mortality risk. "
-                "Continue standard monitoring."
+                "Continue routine monitoring and standard care."
             )
 
         elif p < 20:
 
             note = (
                 "Moderate mortality risk detected. "
-                "Recommend close monitoring and repeat laboratory evaluation."
+                "Recommend closer observation and repeat laboratory evaluation."
             )
 
         else:
 
             note = (
                 "High mortality risk detected. "
-                "Immediate clinical attention recommended."
+                "Consider ICU evaluation and urgent clinical escalation."
             )
 
         return ui.div(
@@ -723,40 +745,60 @@ def server(input, output, session):
             class_="clinical-note"
         )
 
-    # -------------------------------------------------
+    # =================================================
     # CLINICAL FINDINGS
-    # -------------------------------------------------
+    # =================================================
 
     @output
     @render.ui
     def clinical_findings():
 
-        factors = factor_state()
+        labs = lab_values()
+
+        f = factor_state()
 
         findings = [
 
-            ("No Chills", factors["chills"]),
+            (
+                "Hypothermia",
+                f["hypothermia"],
+                (
+                    f"{labs['temperature']} °C"
+                    if labs["temperature"] is not None
+                    else "No data"
+                )
+            ),
 
-            ("Hypothermia Detected", factors["hypothermia"]),
+            (
+                "Anemia",
+                f["anemia"],
+                (
+                    f"RBC {labs['rbc']}"
+                    if labs["rbc"] is not None
+                    else "No data"
+                )
+            ),
 
-            ("Anemia Detected", factors["anemia"]),
-
-            ("RDW > 14.5%", factors["rdw"]),
-
-            ("Malignancy History", factors["malignancy"])
+            (
+                "RDW Elevation",
+                f["rdw"],
+                (
+                    f"{labs['rdw']} %"
+                    if labs["rdw"] is not None
+                    else "No data"
+                )
+            )
         ]
 
         cards = []
 
-        for label, val in findings:
+        for label, abnormal, value in findings:
 
-            positive = val == "Yes"
-
-            icon = "✓" if positive else "✗"
+            icon = "✓" if abnormal else "✗"
 
             cls = (
                 "finding-item finding-positive"
-                if positive else
+                if abnormal else
                 "finding-item finding-negative"
             )
 
@@ -766,78 +808,112 @@ def server(input, output, session):
 
                     {"class":cls},
 
-                    ui.span(
-                        icon,
-                        class_="finding-icon"
+                    ui.div(
+
+                        ui.div(
+                            icon,
+                            class_="finding-icon"
+                        )
                     ),
 
-                    ui.span(label)
+                    ui.div(
+
+                        ui.div(label),
+
+                        ui.div(
+                            value,
+                            class_="finding-value"
+                        )
+                    )
                 )
             )
 
         return ui.div(*cards)
 
-    # -------------------------------------------------
+    # =================================================
     # CLINICAL SUMMARY
-    # -------------------------------------------------
+    # =================================================
 
     @output
     @render.ui
     def clinical_summary():
 
-        data = fhir_data()
+        labs = lab_values()
 
-        obs = data.get("observation", {})
+        # ---------------------------------------------
+        # TEMPERATURE
+        # ---------------------------------------------
 
-        temp = "N/A"
-        rbc = "N/A"
-        rdw = "N/A"
+        temp = labs["temperature"]
 
-        if "component" in obs:
+        if temp is None:
 
-            for c in obs["component"]:
+            temp_text = "No data"
+            temp_class = "summary-value"
 
-                code = c.get(
-                    "code",{}
-                ).get(
-                    "coding",[{}]
-                )[0].get("code")
+        else:
 
-                # TEMPERATURE
+            temp_text = f"{temp} °C"
 
-                if code == "8310-5":
+            if temp < 36:
 
-                    value = c.get(
-                        "valueQuantity",{}
-                    ).get("value","N/A")
+                temp_class = "summary-value summary-abnormal"
 
-                    temp = f"{value} °C"
+            else:
 
-                # RBC
+                temp_class = "summary-value summary-normal"
 
-                elif code == "789-8":
+        # ---------------------------------------------
+        # RBC
+        # ---------------------------------------------
 
-                    value = c.get(
-                        "valueQuantity",{}
-                    ).get("value","N/A")
+        rbc = labs["rbc"]
 
-                    rbc = str(value)
+        if rbc is None:
 
-                # RDW
+            rbc_text = "No data"
+            rbc_class = "summary-value"
 
-                elif code == "788-0":
+        else:
 
-                    value = c.get(
-                        "valueQuantity",{}
-                    ).get("value","N/A")
+            rbc_text = str(rbc)
 
-                    rdw = f"{value} %"
+            if rbc < 4:
 
-        factors = factor_state()
+                rbc_class = "summary-value summary-abnormal"
+
+            else:
+
+                rbc_class = "summary-value summary-normal"
+
+        # ---------------------------------------------
+        # RDW
+        # ---------------------------------------------
+
+        rdw = labs["rdw"]
+
+        if rdw is None:
+
+            rdw_text = "No data"
+            rdw_class = "summary-value"
+
+        else:
+
+            rdw_text = f"{rdw} %"
+
+            if rdw > 14.5:
+
+                rdw_class = "summary-value summary-high"
+
+            else:
+
+                rdw_class = "summary-value summary-normal"
 
         return ui.tags.table(
 
             {"class":"summary-table"},
+
+            # TEMPERATURE
 
             ui.tags.tr(
 
@@ -847,10 +923,12 @@ def server(input, output, session):
                 ),
 
                 ui.tags.td(
-                    temp,
-                    class_="summary-value abnormal"
+                    temp_text,
+                    class_=temp_class
                 )
             ),
+
+            # RBC
 
             ui.tags.tr(
 
@@ -860,10 +938,12 @@ def server(input, output, session):
                 ),
 
                 ui.tags.td(
-                    rbc,
-                    class_="summary-value abnormal"
+                    rbc_text,
+                    class_=rbc_class
                 )
             ),
+
+            # RDW
 
             ui.tags.tr(
 
@@ -873,21 +953,8 @@ def server(input, output, session):
                 ),
 
                 ui.tags.td(
-                    rdw,
-                    class_="summary-value abnormal"
-                )
-            ),
-
-            ui.tags.tr(
-
-                ui.tags.td(
-                    "Malignancy History",
-                    class_="summary-label"
-                ),
-
-                ui.tags.td(
-                    factors["malignancy"],
-                    class_="summary-value"
+                    rdw_text,
+                    class_=rdw_class
                 )
             )
         )
