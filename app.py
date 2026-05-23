@@ -61,9 +61,10 @@ app_ui = ui.page_fluid(
     ========================== */
 
     .main-title{
-        font-size:38px;
+        font-size:42px;
         font-weight:800;
         margin-bottom:6px;
+        color:#111827;
     }
 
     .subtitle{
@@ -78,8 +79,8 @@ app_ui = ui.page_fluid(
 
     .custom-sidebar{
         background:white;
-        border-radius:18px;
-        padding:22px;
+        border-radius:20px;
+        padding:24px;
         box-shadow:0 6px 18px rgba(0,0,0,.08);
     }
 
@@ -89,8 +90,8 @@ app_ui = ui.page_fluid(
 
     .card{
         background:white;
-        border-radius:20px;
-        padding:26px;
+        border-radius:22px;
+        padding:28px;
         margin-bottom:24px;
         box-shadow:0 6px 18px rgba(0,0,0,.08);
         transition:.2s;
@@ -102,6 +103,34 @@ app_ui = ui.page_fluid(
     }
 
     /* =========================
+       PATIENT HEADER
+    ========================== */
+
+    .patient-header{
+        background:linear-gradient(
+            135deg,
+            #2563eb,
+            #1e40af
+        );
+        color:white;
+        border-radius:22px;
+        padding:30px;
+        margin-bottom:24px;
+        box-shadow:0 10px 24px rgba(0,0,0,.15);
+    }
+
+    .patient-name{
+        font-size:32px;
+        font-weight:800;
+        margin-bottom:8px;
+    }
+
+    .patient-meta{
+        font-size:16px;
+        opacity:.9;
+    }
+
+    /* =========================
        RISK
     ========================== */
 
@@ -110,14 +139,15 @@ app_ui = ui.page_fluid(
     }
 
     .risk-number{
-        font-size:76px;
+        font-size:88px;
         font-weight:800;
         line-height:1;
-        margin-top:10px;
+        margin-top:12px;
+        margin-bottom:12px;
     }
 
     .risk-label{
-        font-size:22px;
+        font-size:24px;
         font-weight:700;
         margin-bottom:8px;
     }
@@ -135,7 +165,7 @@ app_ui = ui.page_fluid(
     }
 
     .risk-bar{
-        height:16px;
+        height:18px;
         border-radius:999px;
         background:linear-gradient(
             to right,
@@ -143,7 +173,7 @@ app_ui = ui.page_fluid(
             #fdd835,
             #e53935
         );
-        margin-top:25px;
+        margin-top:28px;
         position:relative;
         overflow:hidden;
     }
@@ -151,10 +181,19 @@ app_ui = ui.page_fluid(
     .risk-marker{
         position:absolute;
         top:-5px;
-        width:4px;
-        height:26px;
+        width:5px;
+        height:28px;
         background:black;
         border-radius:10px;
+    }
+
+    .clinical-note{
+        margin-top:22px;
+        padding:16px;
+        background:#f8fafc;
+        border-radius:14px;
+        font-size:15px;
+        color:#374151;
     }
 
     /* =========================
@@ -181,75 +220,34 @@ app_ui = ui.page_fluid(
     }
 
     /* =========================
-       FHIR JSON
+       SUMMARY TABLE
     ========================== */
 
-    /* =========================
-   FHIR JSON
-========================== */
+    .summary-table{
+        width:100%;
+        border-collapse:collapse;
+    }
 
-.fhir-box{
+    .summary-table td{
+        padding:14px;
+        border-bottom:1px solid #e5e7eb;
+        font-size:15px;
+    }
 
-    max-height:320px;
+    .summary-label{
+        color:#6b7280;
+        width:40%;
+        font-weight:600;
+    }
 
-    overflow:auto;
+    .summary-value{
+        font-weight:700;
+        color:#111827;
+    }
 
-    background:#0f172a;
-
-    border-radius:14px;
-
-    padding:18px;
-
-    font-size:13px;
-
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,.08);
-}
-
-/* JSON TEXT */
-
-.fhir-box pre{
-
-    color:#f8fafc !important;
-
-    margin:0;
-
-    white-space:pre-wrap;
-
-    word-break:break-word;
-
-    font-family:
-        Consolas,
-        Monaco,
-        "Courier New",
-        monospace;
-
-    line-height:1.6;
-}
-
-/* Scrollbar */
-
-.fhir-box::-webkit-scrollbar{
-
-    width:10px;
-}
-
-.fhir-box::-webkit-scrollbar-track{
-
-    background:#111827;
-}
-
-.fhir-box::-webkit-scrollbar-thumb{
-
-    background:#334155;
-
-    border-radius:999px;
-}
-
-.fhir-box::-webkit-scrollbar-thumb:hover{
-
-    background:#475569;
-}
+    .abnormal{
+        color:#dc2626;
+    }
 
     /* =========================
        RADIO BUTTON SPACING
@@ -303,9 +301,6 @@ app_ui = ui.page_fluid(
 
                 ui.hr(),
 
-                # ---------------------------------------------
-                # Chills
-                # ---------------------------------------------
                 ui.input_radio_buttons(
                     "chills",
                     "No Chills",
@@ -313,9 +308,6 @@ app_ui = ui.page_fluid(
                     inline=True
                 ),
 
-                # ---------------------------------------------
-                # Hypothermia
-                # ---------------------------------------------
                 ui.input_radio_buttons(
                     "hypothermia",
                     "Hypothermia",
@@ -325,9 +317,6 @@ app_ui = ui.page_fluid(
 
                 ui.p("Temperature < 36°C"),
 
-                # ---------------------------------------------
-                # Anemia
-                # ---------------------------------------------
                 ui.input_radio_buttons(
                     "anemia",
                     "Anemia",
@@ -337,9 +326,6 @@ app_ui = ui.page_fluid(
 
                 ui.p("RBC < 4M/uL"),
 
-                # ---------------------------------------------
-                # RDW
-                # ---------------------------------------------
                 ui.input_radio_buttons(
                     "rdw",
                     "RDW > 14.5%",
@@ -347,9 +333,6 @@ app_ui = ui.page_fluid(
                     inline=True
                 ),
 
-                # ---------------------------------------------
-                # Malignancy
-                # ---------------------------------------------
                 ui.input_radio_buttons(
                     "malignancy",
                     "Malignancy",
@@ -367,6 +350,16 @@ app_ui = ui.page_fluid(
         ui.div(
 
             # =============================================
+            # PATIENT HEADER
+            # =============================================
+            ui.div(
+
+                {"class":"patient-header"},
+
+                ui.output_ui("patient_header")
+            ),
+
+            # =============================================
             # RISK CARD
             # =============================================
             ui.div(
@@ -380,6 +373,8 @@ app_ui = ui.page_fluid(
                 ui.output_ui("prob"),
 
                 ui.output_ui("risk_bar"),
+
+                ui.output_ui("clinical_note"),
 
                 ui.hr(),
 
@@ -412,21 +407,15 @@ app_ui = ui.page_fluid(
             ),
 
             # =============================================
-            # FHIR CARD
+            # CLINICAL SUMMARY
             # =============================================
             ui.div(
 
                 {"class":"card"},
 
-                ui.h4("FHIR Patient & Observation Data"),
+                ui.h4("Clinical Summary"),
 
-                ui.div(
-                    {"class":"fhir-box"},
-
-                    ui.tags.pre(
-                        ui.output_text("patient_info")
-                    )
-                )
+                ui.output_ui("clinical_summary")
             )
         )
     )
@@ -472,9 +461,6 @@ def server(input, output, session):
 
         try:
 
-            # -----------------------------------------
-            # Patient
-            # -----------------------------------------
             patient_response = requests.get(
                 f"{input.fhir()}/Patient/{input.pid()}",
                 headers=headers,
@@ -484,9 +470,6 @@ def server(input, output, session):
 
             data["patient"] = patient_response.json()
 
-            # -----------------------------------------
-            # Observation
-            # -----------------------------------------
             if input.obs():
 
                 obs_response = requests.get(
@@ -503,18 +486,6 @@ def server(input, output, session):
             data["error"] = str(e)
 
         return data
-
-    # -------------------------------------------------
-    # SHOW FHIR JSON
-    # -------------------------------------------------
-    @output
-    @render.text
-    def patient_info():
-
-        return json.dumps(
-            fhir_data(),
-            indent=2
-        )
 
     # -------------------------------------------------
     # INIT FROM FHIR
@@ -544,27 +515,18 @@ def server(input, output, session):
                 "coding",[{}]
             )[0].get("code")
 
-            # -----------------------------------------
-            # Chills
-            # -----------------------------------------
             if (
                 code=="chills"
                 and c.get("valueInteger")==1
             ):
                 defaults["chills"]="Yes"
 
-            # -----------------------------------------
-            # Malignancy
-            # -----------------------------------------
             elif (
                 code=="malignancy"
                 and c.get("valueInteger")==1
             ):
                 defaults["malignancy"]="Yes"
 
-            # -----------------------------------------
-            # RBC
-            # -----------------------------------------
             elif (
                 code=="789-8"
                 and c.get(
@@ -573,9 +535,6 @@ def server(input, output, session):
             ):
                 defaults["anemia"]="Yes"
 
-            # -----------------------------------------
-            # RDW
-            # -----------------------------------------
             elif (
                 code=="788-0"
                 and c.get(
@@ -584,9 +543,6 @@ def server(input, output, session):
             ):
                 defaults["rdw"]="Yes"
 
-            # -----------------------------------------
-            # Temperature
-            # -----------------------------------------
             elif (
                 code=="8310-5"
                 and c.get(
@@ -619,6 +575,40 @@ def server(input, output, session):
 
             input.malignancy()=="Yes"
         ])
+
+    # -------------------------------------------------
+    # PATIENT HEADER
+    # -------------------------------------------------
+    @output
+    @render.ui
+    def patient_header():
+
+        data = fhir_data()
+        patient = data.get("patient", {})
+
+        try:
+            family = patient["name"][0]["family"]
+            given = patient["name"][0]["given"][0]
+            fullname = f"{given} {family}"
+        except:
+            fullname = "Unknown Patient"
+
+        gender = patient.get("gender", "Unknown")
+
+        patient_id = input.pid()
+
+        return ui.div(
+
+            ui.div(
+                fullname,
+                class_="patient-name"
+            ),
+
+            ui.div(
+                f"Patient ID: {patient_id} • Gender: {gender}",
+                class_="patient-meta"
+            )
+        )
 
     # -------------------------------------------------
     # PROBABILITY
@@ -694,6 +684,38 @@ def server(input, output, session):
         )
 
     # -------------------------------------------------
+    # CLINICAL NOTE
+    # -------------------------------------------------
+    @output
+    @render.ui
+    def clinical_note():
+
+        p = CHARM_TABLE.get(score(),0)
+
+        if p < 5:
+            note = (
+                "Patient currently demonstrates low mortality risk. "
+                "Continue standard monitoring."
+            )
+
+        elif p < 20:
+            note = (
+                "Moderate mortality risk detected. "
+                "Recommend close monitoring and repeat laboratory evaluation."
+            )
+
+        else:
+            note = (
+                "High mortality risk detected. "
+                "Immediate clinical attention and escalation recommended."
+            )
+
+        return ui.div(
+            note,
+            class_="clinical-note"
+        )
+
+    # -------------------------------------------------
     # FACTOR LIST
     # -------------------------------------------------
     @output
@@ -734,6 +756,107 @@ def server(input, output, session):
             )
 
         return ui.div(*pills)
+
+    # -------------------------------------------------
+    # CLINICAL SUMMARY
+    # -------------------------------------------------
+    @output
+    @render.ui
+    def clinical_summary():
+
+        data = fhir_data()
+
+        obs = data.get("observation", {})
+
+        temp = "N/A"
+        rbc = "N/A"
+        rdw = "N/A"
+
+        if "component" in obs:
+
+            for c in obs["component"]:
+
+                code = c.get(
+                    "code",{}
+                ).get(
+                    "coding",[{}]
+                )[0].get("code")
+
+                # Temperature
+                if code == "8310-5":
+
+                    value = c.get(
+                        "valueQuantity",{}
+                    ).get("value","N/A")
+
+                    temp = f"{value} °C"
+
+                # RBC
+                elif code == "789-8":
+
+                    value = c.get(
+                        "valueQuantity",{}
+                    ).get("value","N/A")
+
+                    rbc = str(value)
+
+                # RDW
+                elif code == "788-0":
+
+                    value = c.get(
+                        "valueQuantity",{}
+                    ).get("value","N/A")
+
+                    rdw = f"{value} %"
+
+        return ui.tags.table(
+
+            {"class":"summary-table"},
+
+            ui.tags.tr(
+                ui.tags.td(
+                    "Temperature",
+                    class_="summary-label"
+                ),
+                ui.tags.td(
+                    temp,
+                    class_="summary-value abnormal"
+                )
+            ),
+
+            ui.tags.tr(
+                ui.tags.td(
+                    "RBC",
+                    class_="summary-label"
+                ),
+                ui.tags.td(
+                    rbc,
+                    class_="summary-value abnormal"
+                )
+            ),
+
+            ui.tags.tr(
+                ui.tags.td(
+                    "RDW",
+                    class_="summary-label"
+                ),
+                ui.tags.td(
+                    rdw,
+                    class_="summary-value abnormal"
+                )
+            ),
+
+            ui.tags.tr(
+                ui.tags.td(
+                    "Malignancy History",
+                    class_="summary-label"
+                ),
+                ui.tags.td(
+                    input.malignancy(),
+                    class_="summary-value"
+                )
+            )
+        )
 
 # =====================================================
 # APP
