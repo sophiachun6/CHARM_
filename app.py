@@ -1,14 +1,14 @@
 from shiny import App, ui, render, reactive
 import requests
-import json
 
 # =====================================================
 # UI
 # =====================================================
+
 app_ui = ui.page_fluid(
 
     # -------------------------------------------------
-    # URL hash → Shiny input
+    # URL HASH → SHINY INPUT
     # -------------------------------------------------
     ui.tags.script("""
     (function () {
@@ -36,9 +36,9 @@ app_ui = ui.page_fluid(
     })();
     """),
 
-    # -------------------------------------------------
+    # =================================================
     # CSS
-    # -------------------------------------------------
+    # =================================================
     ui.tags.style("""
 
     /* =========================
@@ -74,12 +74,12 @@ app_ui = ui.page_fluid(
     }
 
     /* =========================
-       CUSTOM SIDEBAR
+       SIDEBAR
     ========================== */
 
     .custom-sidebar{
         background:white;
-        border-radius:20px;
+        border-radius:22px;
         padding:24px;
         box-shadow:0 6px 18px rgba(0,0,0,.08);
     }
@@ -110,7 +110,7 @@ app_ui = ui.page_fluid(
         background:linear-gradient(
             135deg,
             #2563eb,
-            #1e40af
+            #1d4ed8
         );
         color:white;
         border-radius:22px;
@@ -120,9 +120,9 @@ app_ui = ui.page_fluid(
     }
 
     .patient-name{
-        font-size:32px;
+        font-size:34px;
         font-weight:800;
-        margin-bottom:8px;
+        margin-bottom:10px;
     }
 
     .patient-meta{
@@ -139,10 +139,10 @@ app_ui = ui.page_fluid(
     }
 
     .risk-number{
-        font-size:88px;
+        font-size:92px;
         font-weight:800;
         line-height:1;
-        margin-top:12px;
+        margin-top:10px;
         margin-bottom:12px;
     }
 
@@ -153,15 +153,15 @@ app_ui = ui.page_fluid(
     }
 
     .risk-low{
-        color:#43a047;
+        color:#16a34a;
     }
 
     .risk-mid{
-        color:#fb8c00;
+        color:#f59e0b;
     }
 
     .risk-high{
-        color:#e53935;
+        color:#dc2626;
     }
 
     .risk-bar{
@@ -169,11 +169,11 @@ app_ui = ui.page_fluid(
         border-radius:999px;
         background:linear-gradient(
             to right,
-            #43a047,
-            #fdd835,
-            #e53935
+            #22c55e,
+            #facc15,
+            #ef4444
         );
-        margin-top:28px;
+        margin-top:30px;
         position:relative;
         overflow:hidden;
     }
@@ -187,36 +187,47 @@ app_ui = ui.page_fluid(
         border-radius:10px;
     }
 
+    /* =========================
+       CLINICAL NOTE
+    ========================== */
+
     .clinical-note{
         margin-top:22px;
-        padding:16px;
         background:#f8fafc;
-        border-radius:14px;
-        font-size:15px;
+        padding:18px;
+        border-radius:16px;
         color:#374151;
+        font-size:15px;
+        line-height:1.6;
     }
 
     /* =========================
-       FACTORS
+       FINDINGS
     ========================== */
 
-    .factor-pill{
-        display:inline-block;
-        padding:10px 18px;
-        border-radius:999px;
-        margin:6px;
-        font-weight:600;
+    .finding-item{
+        display:flex;
+        align-items:center;
+        padding:14px;
+        border-radius:14px;
+        margin-bottom:12px;
         font-size:15px;
+        font-weight:600;
     }
 
-    .pill-active{
-        background:#ffebee;
-        color:#c62828;
+    .finding-positive{
+        background:#fef2f2;
+        color:#b91c1c;
     }
 
-    .pill-inactive{
-        background:#eceff1;
-        color:#607d8b;
+    .finding-negative{
+        background:#f8fafc;
+        color:#64748b;
+    }
+
+    .finding-icon{
+        font-size:18px;
+        margin-right:12px;
     }
 
     /* =========================
@@ -229,7 +240,7 @@ app_ui = ui.page_fluid(
     }
 
     .summary-table td{
-        padding:14px;
+        padding:16px;
         border-bottom:1px solid #e5e7eb;
         font-size:15px;
     }
@@ -249,27 +260,21 @@ app_ui = ui.page_fluid(
         color:#dc2626;
     }
 
-    /* =========================
-       RADIO BUTTON SPACING
-    ========================== */
-
-    .form-check{
-        margin-right:18px;
-    }
-
     """),
 
-    # -------------------------------------------------
-    # Hidden inputs
-    # -------------------------------------------------
+    # =================================================
+    # HIDDEN INPUTS
+    # =================================================
+
     ui.input_text("token",""),
     ui.input_text("pid",""),
     ui.input_text("fhir",""),
     ui.input_text("obs",""),
 
-    # -------------------------------------------------
+    # =================================================
     # TITLE
-    # -------------------------------------------------
+    # =================================================
+
     ui.div(
 
         ui.div(
@@ -283,75 +288,40 @@ app_ui = ui.page_fluid(
         )
     ),
 
-    # -------------------------------------------------
-    # MAIN LAYOUT
-    # -------------------------------------------------
+    # =================================================
+    # LAYOUT
+    # =================================================
+
     ui.layout_sidebar(
 
-        # =================================================
+        # =============================================
         # SIDEBAR
-        # =================================================
+        # =============================================
+
         ui.sidebar(
 
             ui.div(
 
                 {"class":"custom-sidebar"},
 
-                ui.h4("Clinical Factors"),
+                ui.h4("Clinical Findings"),
 
                 ui.hr(),
 
-                ui.input_radio_buttons(
-                    "chills",
-                    "No Chills",
-                    {"No":"No","Yes":"Yes"},
-                    inline=True
-                ),
-
-                ui.input_radio_buttons(
-                    "hypothermia",
-                    "Hypothermia",
-                    {"No":"No","Yes":"Yes"},
-                    inline=True
-                ),
-
-                ui.p("Temperature < 36°C"),
-
-                ui.input_radio_buttons(
-                    "anemia",
-                    "Anemia",
-                    {"No":"No","Yes":"Yes"},
-                    inline=True
-                ),
-
-                ui.p("RBC < 4M/uL"),
-
-                ui.input_radio_buttons(
-                    "rdw",
-                    "RDW > 14.5%",
-                    {"No":"No","Yes":"Yes"},
-                    inline=True
-                ),
-
-                ui.input_radio_buttons(
-                    "malignancy",
-                    "Malignancy",
-                    {"No":"No","Yes":"Yes"},
-                    inline=True
-                ),
-
-                ui.p("History of malignancy")
+                ui.output_ui("clinical_findings")
             )
         ),
 
-        # =================================================
+        # =============================================
         # MAIN CONTENT
-        # =================================================
+        # =============================================
+
         ui.div(
 
-            # =============================================
+            # -----------------------------------------
             # PATIENT HEADER
-            # =============================================
+            # -----------------------------------------
+
             ui.div(
 
                 {"class":"patient-header"},
@@ -359,9 +329,10 @@ app_ui = ui.page_fluid(
                 ui.output_ui("patient_header")
             ),
 
-            # =============================================
+            # -----------------------------------------
             # RISK CARD
-            # =============================================
+            # -----------------------------------------
+
             ui.div(
 
                 {"class":"card risk-center"},
@@ -382,7 +353,7 @@ app_ui = ui.page_fluid(
 
                 ui.a(
                     "CHARM Score Research Paper",
-                    href="https://www.ncbi.nlm.nih.gov/pubmed/?term=27832977",
+                    href="https://pubmed.ncbi.nlm.nih.gov/27832977/",
                     target="_blank"
                 ),
 
@@ -394,21 +365,10 @@ app_ui = ui.page_fluid(
                 ui.div("SMART on FHIR UI by Howard")
             ),
 
-            # =============================================
-            # FACTORS CARD
-            # =============================================
-            ui.div(
-
-                {"class":"card"},
-
-                ui.h4("Contributing Clinical Factors"),
-
-                ui.output_ui("factor_list")
-            ),
-
-            # =============================================
+            # -----------------------------------------
             # CLINICAL SUMMARY
-            # =============================================
+            # -----------------------------------------
+
             ui.div(
 
                 {"class":"card"},
@@ -424,7 +384,9 @@ app_ui = ui.page_fluid(
 # =====================================================
 # CHARM TABLE
 # =====================================================
+
 CHARM_TABLE = {
+
     0: 0.36,
     1: 1.89,
     2: 5.79,
@@ -436,11 +398,13 @@ CHARM_TABLE = {
 # =====================================================
 # SERVER
 # =====================================================
+
 def server(input, output, session):
 
     # -------------------------------------------------
-    # FHIR FETCH
+    # FETCH FHIR
     # -------------------------------------------------
+
     @reactive.Calc
     def fhir_data():
 
@@ -452,30 +416,45 @@ def server(input, output, session):
             return {}
 
         headers = {
+
             "Authorization":
             f"Bearer {input.token()}",
-            "Accept":"application/fhir+json"
+
+            "Accept":
+            "application/fhir+json"
         }
 
         data = {}
 
         try:
 
+            # PATIENT
+
             patient_response = requests.get(
+
                 f"{input.fhir()}/Patient/{input.pid()}",
+
                 headers=headers,
+
                 verify=False,
+
                 timeout=10
             )
 
             data["patient"] = patient_response.json()
 
+            # OBSERVATION
+
             if input.obs():
 
                 obs_response = requests.get(
+
                     input.obs(),
+
                     headers=headers,
+
                     verify=False,
+
                     timeout=10
                 )
 
@@ -488,15 +467,13 @@ def server(input, output, session):
         return data
 
     # -------------------------------------------------
-    # INIT FROM FHIR
+    # INITIALIZE CLINICAL FACTORS
     # -------------------------------------------------
-    @reactive.Effect
-    def init_ui_from_fhir():
+
+    @reactive.Calc
+    def factor_state():
 
         obs = fhir_data().get("observation")
-
-        if not obs or "component" not in obs:
-            return
 
         defaults = {
 
@@ -507,6 +484,9 @@ def server(input, output, session):
             "malignancy":"No"
         }
 
+        if not obs or "component" not in obs:
+            return defaults
+
         for c in obs["component"]:
 
             code = c.get(
@@ -515,17 +495,23 @@ def server(input, output, session):
                 "coding",[{}]
             )[0].get("code")
 
+            # CHILLS
+
             if (
                 code=="chills"
                 and c.get("valueInteger")==1
             ):
                 defaults["chills"]="Yes"
 
+            # MALIGNANCY
+
             elif (
                 code=="malignancy"
                 and c.get("valueInteger")==1
             ):
                 defaults["malignancy"]="Yes"
+
+            # RBC
 
             elif (
                 code=="789-8"
@@ -535,6 +521,8 @@ def server(input, output, session):
             ):
                 defaults["anemia"]="Yes"
 
+            # RDW
+
             elif (
                 code=="788-0"
                 and c.get(
@@ -542,6 +530,8 @@ def server(input, output, session):
                 ).get("value",0)>14.5
             ):
                 defaults["rdw"]="Yes"
+
+            # TEMPERATURE
 
             elif (
                 code=="8310-5"
@@ -551,46 +541,51 @@ def server(input, output, session):
             ):
                 defaults["hypothermia"]="Yes"
 
-        for k,v in defaults.items():
-
-            session.send_input_message(
-                k,
-                {"value":v}
-            )
+        return defaults
 
     # -------------------------------------------------
     # SCORE
     # -------------------------------------------------
+
     def score():
+
+        factors = factor_state()
 
         return sum([
 
-            input.chills()=="Yes",
+            factors["chills"]=="Yes",
 
-            input.hypothermia()=="Yes",
+            factors["hypothermia"]=="Yes",
 
-            input.anemia()=="Yes",
+            factors["anemia"]=="Yes",
 
-            input.rdw()=="Yes",
+            factors["rdw"]=="Yes",
 
-            input.malignancy()=="Yes"
+            factors["malignancy"]=="Yes"
         ])
 
     # -------------------------------------------------
     # PATIENT HEADER
     # -------------------------------------------------
+
     @output
     @render.ui
     def patient_header():
 
         data = fhir_data()
+
         patient = data.get("patient", {})
 
         try:
+
             family = patient["name"][0]["family"]
+
             given = patient["name"][0]["given"][0]
+
             fullname = f"{given} {family}"
+
         except:
+
             fullname = "Unknown Patient"
 
         gender = patient.get("gender", "Unknown")
@@ -611,8 +606,9 @@ def server(input, output, session):
         )
 
     # -------------------------------------------------
-    # PROBABILITY
+    # RISK NUMBER
     # -------------------------------------------------
+
     @output
     @render.ui
     def prob():
@@ -621,20 +617,23 @@ def server(input, output, session):
 
         cls = (
             "risk-low"
-            if p<5 else
+            if p < 5 else
             "risk-mid"
-            if p<20 else
+            if p < 20 else
             "risk-high"
         )
 
         return ui.div(
+
             f"{p:.2f}%",
+
             class_=f"risk-number {cls}"
         )
 
     # -------------------------------------------------
     # RISK LABEL
     # -------------------------------------------------
+
     @output
     @render.ui
     def risk_label():
@@ -665,6 +664,7 @@ def server(input, output, session):
     # -------------------------------------------------
     # RISK BAR
     # -------------------------------------------------
+
     @output
     @render.ui
     def risk_bar():
@@ -678,7 +678,9 @@ def server(input, output, session):
             {"class":"risk-bar"},
 
             ui.div({
+
                 "class":"risk-marker",
+
                 "style":f"left:{left}%"
             })
         )
@@ -686,6 +688,7 @@ def server(input, output, session):
     # -------------------------------------------------
     # CLINICAL NOTE
     # -------------------------------------------------
+
     @output
     @render.ui
     def clinical_note():
@@ -693,73 +696,91 @@ def server(input, output, session):
         p = CHARM_TABLE.get(score(),0)
 
         if p < 5:
+
             note = (
                 "Patient currently demonstrates low mortality risk. "
                 "Continue standard monitoring."
             )
 
         elif p < 20:
+
             note = (
                 "Moderate mortality risk detected. "
                 "Recommend close monitoring and repeat laboratory evaluation."
             )
 
         else:
+
             note = (
                 "High mortality risk detected. "
-                "Immediate clinical attention and escalation recommended."
+                "Immediate clinical attention recommended."
             )
 
         return ui.div(
+
             note,
+
             class_="clinical-note"
         )
 
     # -------------------------------------------------
-    # FACTOR LIST
+    # CLINICAL FINDINGS
     # -------------------------------------------------
+
     @output
     @render.ui
-    def factor_list():
+    def clinical_findings():
 
-        factors = [
+        factors = factor_state()
 
-            ("No Chills", input.chills()),
+        findings = [
 
-            ("Hypothermia", input.hypothermia()),
+            ("No Chills", factors["chills"]),
 
-            ("Anemia", input.anemia()),
+            ("Hypothermia Detected", factors["hypothermia"]),
 
-            ("RDW > 14.5%", input.rdw()),
+            ("Anemia Detected", factors["anemia"]),
 
-            ("Malignancy", input.malignancy())
+            ("RDW > 14.5%", factors["rdw"]),
+
+            ("Malignancy History", factors["malignancy"])
         ]
 
-        pills = []
+        cards = []
 
-        for label,val in factors:
+        for label, val in findings:
 
-            active = val == "Yes"
+            positive = val == "Yes"
 
-            pills.append(
+            icon = "✓" if positive else "✗"
 
-                ui.span(
+            cls = (
+                "finding-item finding-positive"
+                if positive else
+                "finding-item finding-negative"
+            )
 
-                    label,
+            cards.append(
 
-                    class_=(
-                        "factor-pill pill-active"
-                        if active else
-                        "factor-pill pill-inactive"
-                    )
+                ui.div(
+
+                    {"class":cls},
+
+                    ui.span(
+                        icon,
+                        class_="finding-icon"
+                    ),
+
+                    ui.span(label)
                 )
             )
 
-        return ui.div(*pills)
+        return ui.div(*cards)
 
     # -------------------------------------------------
     # CLINICAL SUMMARY
     # -------------------------------------------------
+
     @output
     @render.ui
     def clinical_summary():
@@ -782,7 +803,8 @@ def server(input, output, session):
                     "coding",[{}]
                 )[0].get("code")
 
-                # Temperature
+                # TEMPERATURE
+
                 if code == "8310-5":
 
                     value = c.get(
@@ -792,6 +814,7 @@ def server(input, output, session):
                     temp = f"{value} °C"
 
                 # RBC
+
                 elif code == "789-8":
 
                     value = c.get(
@@ -801,6 +824,7 @@ def server(input, output, session):
                     rbc = str(value)
 
                 # RDW
+
                 elif code == "788-0":
 
                     value = c.get(
@@ -809,15 +833,19 @@ def server(input, output, session):
 
                     rdw = f"{value} %"
 
+        factors = factor_state()
+
         return ui.tags.table(
 
             {"class":"summary-table"},
 
             ui.tags.tr(
+
                 ui.tags.td(
                     "Temperature",
                     class_="summary-label"
                 ),
+
                 ui.tags.td(
                     temp,
                     class_="summary-value abnormal"
@@ -825,10 +853,12 @@ def server(input, output, session):
             ),
 
             ui.tags.tr(
+
                 ui.tags.td(
                     "RBC",
                     class_="summary-label"
                 ),
+
                 ui.tags.td(
                     rbc,
                     class_="summary-value abnormal"
@@ -836,10 +866,12 @@ def server(input, output, session):
             ),
 
             ui.tags.tr(
+
                 ui.tags.td(
                     "RDW",
                     class_="summary-label"
                 ),
+
                 ui.tags.td(
                     rdw,
                     class_="summary-value abnormal"
@@ -847,12 +879,14 @@ def server(input, output, session):
             ),
 
             ui.tags.tr(
+
                 ui.tags.td(
                     "Malignancy History",
                     class_="summary-label"
                 ),
+
                 ui.tags.td(
-                    input.malignancy(),
+                    factors["malignancy"],
                     class_="summary-value"
                 )
             )
@@ -861,4 +895,5 @@ def server(input, output, session):
 # =====================================================
 # APP
 # =====================================================
+
 app = App(app_ui, server)
