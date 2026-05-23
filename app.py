@@ -503,15 +503,7 @@ app_ui = ui.page_fluid(
                 ui.div("UI enhance and implement in SMART on FHIR by Howard")
             ),
 
-            # ==============================================
-            # FINDINGS
-            # ==============================================
-
-            ui.div(
-                {"class":"card"},
-                ui.h4("Clinical Findings"),
-                ui.output_ui("clinical_findings")
-            ),
+           
 
             # ==============================================
             # SUMMARY
@@ -866,80 +858,7 @@ def server(input, output, session):
             )
         )
 
-    @output
-    @render.ui
-    def clinical_findings():
-
-        findings = [
-
-            (
-                "No Chills",
-                input.chills(),
-                "Absence of chills symptom"
-            ),
-
-            (
-                "Hypothermia",
-                input.hypothermia(),
-                "Temperature < 36°C"
-            ),
-
-            (
-                "Anemia",
-                input.anemia(),
-                "RBC < 4M/uL"
-            ),
-
-            (
-                "RDW Elevation",
-                input.rdw(),
-                "RDW > 14.5%"
-            ),
-
-            (
-                "Malignancy History",
-                input.malignancy(),
-                "History of malignancy"
-            )
-        ]
-
-        cards = []
-
-        for label, value, desc in findings:
-
-            if value == "Yes":
-                cls = "finding-card finding-positive"
-                icon = "✓"
-
-            elif value == "No":
-                cls = "finding-card finding-negative"
-                icon = "✗"
-
-            else:
-                cls = "finding-card finding-missing"
-                icon = "?"
-
-            cards.append(
-
-                ui.div(
-
-                    {"class": cls},
-
-                    ui.div(
-                        f"{icon} {label}",
-                        class_="finding-title"
-                    ),
-
-                    ui.div(desc),
-
-                    ui.div(
-                        f"Current Status: {value}",
-                        style="margin-top:8px;font-weight:700;"
-                    )
-                )
-            )
-
-        return ui.div(*cards)
+    
 
     @output
     @render.ui
