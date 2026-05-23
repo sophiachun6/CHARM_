@@ -2,6 +2,81 @@ from shiny import App, ui, render, reactive
 import requests
 
 # =====================================================
+# CHARM SCORE TABLE
+# =====================================================
+
+CHARM_TABLE = {
+
+    0: 0.36,
+    1: 1.89,
+    2: 5.79,
+    3: 12.97,
+    4: 23.58,
+    5: 34.15
+}
+
+# =====================================================
+# OBSERVATION MAP
+# =====================================================
+
+OBSERVATION_MAP = {
+
+    # Temperature
+    "8310-5": {
+        "label": "Temperature",
+        "unit": "°C"
+    },
+
+    # RBC
+    "789-8": {
+        "label": "RBC",
+        "unit": ""
+    },
+
+    # RDW
+    "788-0": {
+        "label": "RDW",
+        "unit": "%"
+    },
+
+    # WBC
+    "6690-2": {
+        "label": "WBC",
+        "unit": "K/uL"
+    },
+
+    # Hemoglobin
+    "718-7": {
+        "label": "Hemoglobin",
+        "unit": "g/dL"
+    },
+
+    # Platelet
+    "777-3": {
+        "label": "Platelet",
+        "unit": "K/uL"
+    },
+
+    # Heart Rate
+    "8867-4": {
+        "label": "Heart Rate",
+        "unit": "bpm"
+    },
+
+    # Respiratory Rate
+    "9279-1": {
+        "label": "Respiratory Rate",
+        "unit": "/min"
+    },
+
+    # SpO2
+    "59408-5": {
+        "label": "SpO2",
+        "unit": "%"
+    }
+}
+
+# =====================================================
 # UI
 # =====================================================
 
@@ -43,10 +118,6 @@ app_ui = ui.page_fluid(
 
     ui.tags.style("""
 
-    /* =================================================
-       BODY
-    ================================================= */
-
     body{
         background:#f3f6fb;
         font-family:Arial, Helvetica, sans-serif;
@@ -57,10 +128,6 @@ app_ui = ui.page_fluid(
     #token,#pid,#fhir,#obs{
         display:none !important;
     }
-
-    /* =================================================
-       TITLE
-    ================================================= */
 
     .main-title{
         font-size:48px;
@@ -75,20 +142,12 @@ app_ui = ui.page_fluid(
         font-size:18px;
     }
 
-    /* =================================================
-       SIDEBAR
-    ================================================= */
-
     .custom-sidebar{
         background:white;
         border-radius:24px;
         padding:24px;
         box-shadow:0 8px 24px rgba(0,0,0,.08);
     }
-
-    /* =================================================
-       CARD
-    ================================================= */
 
     .card{
         background:white;
@@ -97,10 +156,6 @@ app_ui = ui.page_fluid(
         margin-bottom:24px;
         box-shadow:0 8px 24px rgba(0,0,0,.08);
     }
-
-    /* =================================================
-       PATIENT HEADER
-    ================================================= */
 
     .patient-header{
         background:linear-gradient(
@@ -131,10 +186,6 @@ app_ui = ui.page_fluid(
         font-size:14px;
         opacity:.82;
     }
-
-    /* =================================================
-       RISK
-    ================================================= */
 
     .risk-center{
         text-align:center;
@@ -189,10 +240,6 @@ app_ui = ui.page_fluid(
         border-radius:999px;
     }
 
-    /* =================================================
-       AI NOTE
-    ================================================= */
-
     .clinical-note{
         margin-top:26px;
         padding:20px;
@@ -202,10 +249,6 @@ app_ui = ui.page_fluid(
         font-size:15px;
         line-height:1.7;
     }
-
-    /* =================================================
-       FINDINGS
-    ================================================= */
 
     .finding-item{
         border-radius:18px;
@@ -241,10 +284,6 @@ app_ui = ui.page_fluid(
         font-weight:500;
         opacity:.9;
     }
-
-    /* =================================================
-       SUMMARY TABLE
-    ================================================= */
 
     .summary-table{
         width:100%;
@@ -401,20 +440,6 @@ app_ui = ui.page_fluid(
 )
 
 # =====================================================
-# CHARM SCORE TABLE
-# =====================================================
-
-CHARM_TABLE = {
-
-    0: 0.36,
-    1: 1.89,
-    2: 5.79,
-    3: 12.97,
-    4: 23.58,
-    5: 34.15
-}
-
-# =====================================================
 # SERVER
 # =====================================================
 
@@ -447,10 +472,6 @@ def server(input, output, session):
 
         try:
 
-            # =========================================
-            # PATIENT
-            # =========================================
-
             patient_response = requests.get(
 
                 f"{input.fhir()}/Patient/{input.pid()}",
@@ -463,10 +484,6 @@ def server(input, output, session):
             )
 
             data["patient"] = patient_response.json()
-
-            # =========================================
-            # OBSERVATION
-            # =========================================
 
             if input.obs():
 
@@ -490,29 +507,25 @@ def server(input, output, session):
         return data
 
     # =================================================
-    # LAB VALUES
+    # FACTOR STATE
     # =================================================
 
     @reactive.Calc
-    def lab_values():
+    def factor_state():
 
         obs = fhir_data().get("observation", {})
 
-        result = {
+        factors = {
 
-            "temperature": None,
-            "rbc": None,
-            "rdw": None,
-            "last_updated": "Unknown"
+            "no_chills": False,
+            "hypothermia": False,
+            "anemia": False,
+            "rdw": False,
+            "malignancy": False
         }
 
-        result["last_updated"] = obs.get(
-            "lastUpdated",
-            "Unknown"
-        )
-
         if "component" not in obs:
-            return result
+            return factors
 
         for c in obs["component"]:
 
@@ -522,87 +535,38 @@ def server(input, output, session):
                 "coding",[{}]
             )[0].get("code")
 
-            # =========================================
-            # TEMPERATURE
-            # =========================================
+            value = c.get(
+                "valueQuantity",{}
+            ).get("value")
 
-            if code == "8310-5":
+            # Temperature
 
-                result["temperature"] = c.get(
-                    "valueQuantity",{}
-                ).get("value")
+            if (
+                code == "8310-5"
+                and value is not None
+                and value < 36
+            ):
+                factors["hypothermia"] = True
 
-            # =========================================
             # RBC
-            # =========================================
 
-            elif code == "789-8":
+            elif (
+                code == "789-8"
+                and value is not None
+                and value < 4
+            ):
+                factors["anemia"] = True
 
-                result["rbc"] = c.get(
-                    "valueQuantity",{}
-                ).get("value")
-
-            # =========================================
             # RDW
-            # =========================================
 
-            elif code == "788-0":
+            elif (
+                code == "788-0"
+                and value is not None
+                and value > 14.5
+            ):
+                factors["rdw"] = True
 
-                result["rdw"] = c.get(
-                    "valueQuantity",{}
-                ).get("value")
-
-        return result
-
-    # =================================================
-    # FACTOR STATE
-    # =================================================
-
-    @reactive.Calc
-    def factor_state():
-
-        labs = lab_values()
-
-        return {
-
-            # =========================================
-            # NO CHILLS
-            # 目前資料缺少，先保留顯示
-            # =========================================
-
-            "no_chills": False,
-
-            # =========================================
-            # HYPOTHERMIA
-            # =========================================
-
-            "hypothermia":
-            labs["temperature"] is not None
-            and labs["temperature"] < 36,
-
-            # =========================================
-            # ANEMIA
-            # =========================================
-
-            "anemia":
-            labs["rbc"] is not None
-            and labs["rbc"] < 4,
-
-            # =========================================
-            # RDW
-            # =========================================
-
-            "rdw":
-            labs["rdw"] is not None
-            and labs["rdw"] > 14.5,
-
-            # =========================================
-            # MALIGNANCY
-            # 目前資料缺少，先保留顯示
-            # =========================================
-
-            "malignancy": False
-        }
+        return factors
 
     # =================================================
     # SCORE
@@ -637,7 +601,7 @@ def server(input, output, session):
 
         patient = data.get("patient", {})
 
-        labs = lab_values()
+        obs = data.get("observation", {})
 
         try:
 
@@ -653,6 +617,11 @@ def server(input, output, session):
 
         gender = patient.get("gender", "Unknown")
 
+        last_updated = obs.get(
+            "lastUpdated",
+            "Unknown"
+        )
+
         return ui.div(
 
             ui.div(
@@ -666,7 +635,7 @@ def server(input, output, session):
             ),
 
             ui.div(
-                f"Last Updated: {labs['last_updated']}",
+                f"Last Updated: {last_updated}",
                 class_="last-update"
             )
         )
@@ -752,7 +721,7 @@ def server(input, output, session):
         )
 
     # =================================================
-    # AI NOTE
+    # CLINICAL NOTE
     # =================================================
 
     @output
@@ -797,7 +766,7 @@ def server(input, output, session):
     @render.ui
     def clinical_findings():
 
-        labs = lab_values()
+        obs = fhir_data().get("observation", {})
 
         f = factor_state()
 
@@ -812,31 +781,19 @@ def server(input, output, session):
             (
                 "Hypothermia",
                 f["hypothermia"],
-                (
-                    f"{labs['temperature']} °C"
-                    if labs["temperature"] is not None
-                    else "No data"
-                )
+                "Temperature < 36°C"
             ),
 
             (
                 "Anemia",
                 f["anemia"],
-                (
-                    f"RBC {labs['rbc']}"
-                    if labs["rbc"] is not None
-                    else "No data"
-                )
+                "RBC < 4"
             ),
 
             (
                 "RDW Elevation",
                 f["rdw"],
-                (
-                    f"{labs['rdw']} %"
-                    if labs["rdw"] is not None
-                    else "No data"
-                )
+                "RDW > 14.5%"
             ),
 
             (
@@ -886,150 +843,98 @@ def server(input, output, session):
         return ui.div(*cards)
 
     # =================================================
-    # CLINICAL SUMMARY
+    # DYNAMIC CLINICAL SUMMARY
     # =================================================
 
     @output
     @render.ui
     def clinical_summary():
 
-        labs = lab_values()
+        obs = fhir_data().get("observation", {})
 
-        # =============================================
-        # TEMPERATURE
-        # =============================================
+        if "component" not in obs:
 
-        temp = labs["temperature"]
+            return ui.div("No clinical data")
 
-        if temp is None:
+        rows = []
 
-            temp_text = "No data"
-            temp_class = "summary-value"
+        for c in obs["component"]:
 
-        else:
+            code = c.get(
+                "code",{}
+            ).get(
+                "coding",[{}]
+            )[0].get("code")
 
-            temp_text = f"{temp} °C"
+            if code not in OBSERVATION_MAP:
+                continue
 
-            if temp < 36:
+            config = OBSERVATION_MAP[code]
 
-                temp_class = (
-                    "summary-value summary-abnormal"
+            label = config["label"]
+
+            unit = config["unit"]
+
+            value = c.get(
+                "valueQuantity",{}
+            ).get("value")
+
+            if value is None:
+                continue
+
+            display = f"{value} {unit}"
+
+            # =========================================
+            # COLOR LOGIC
+            # =========================================
+
+            css = "summary-value summary-normal"
+
+            # Temperature
+
+            if (
+                code == "8310-5"
+                and value < 36
+            ):
+                css = "summary-value summary-abnormal"
+
+            # RBC
+
+            elif (
+                code == "789-8"
+                and value < 4
+            ):
+                css = "summary-value summary-abnormal"
+
+            # RDW
+
+            elif (
+                code == "788-0"
+                and value > 14.5
+            ):
+                css = "summary-value summary-warning"
+
+            rows.append(
+
+                ui.tags.tr(
+
+                    ui.tags.td(
+                        label,
+                        class_="summary-label"
+                    ),
+
+                    ui.tags.td(
+                        display,
+                        class_=css
+                    )
                 )
-
-            else:
-
-                temp_class = (
-                    "summary-value summary-normal"
-                )
-
-        # =============================================
-        # RBC
-        # =============================================
-
-        rbc = labs["rbc"]
-
-        if rbc is None:
-
-            rbc_text = "No data"
-            rbc_class = "summary-value"
-
-        else:
-
-            rbc_text = str(rbc)
-
-            if rbc < 4:
-
-                rbc_class = (
-                    "summary-value summary-abnormal"
-                )
-
-            else:
-
-                rbc_class = (
-                    "summary-value summary-normal"
-                )
-
-        # =============================================
-        # RDW
-        # =============================================
-
-        rdw = labs["rdw"]
-
-        if rdw is None:
-
-            rdw_text = "No data"
-            rdw_class = "summary-value"
-
-        else:
-
-            rdw_text = f"{rdw} %"
-
-            if rdw > 14.5:
-
-                rdw_class = (
-                    "summary-value summary-warning"
-                )
-
-            else:
-
-                rdw_class = (
-                    "summary-value summary-normal"
-                )
+            )
 
         return ui.tags.table(
 
             {"class":"summary-table"},
 
-            # =========================================
-            # TEMPERATURE
-            # =========================================
-
-            ui.tags.tr(
-
-                ui.tags.td(
-                    "Temperature",
-                    class_="summary-label"
-                ),
-
-                ui.tags.td(
-                    temp_text,
-                    class_=temp_class
-                )
-            ),
-
-            # =========================================
-            # RBC
-            # =========================================
-
-            ui.tags.tr(
-
-                ui.tags.td(
-                    "RBC",
-                    class_="summary-label"
-                ),
-
-                ui.tags.td(
-                    rbc_text,
-                    class_=rbc_class
-                )
-            ),
-
-            # =========================================
-            # RDW
-            # =========================================
-
-            ui.tags.tr(
-
-                ui.tags.td(
-                    "RDW",
-                    class_="summary-label"
-                ),
-
-                ui.tags.td(
-                    rdw_text,
-                    class_=rdw_class
-                )
-            )
+            *rows
         )
 
 # =====================================================
