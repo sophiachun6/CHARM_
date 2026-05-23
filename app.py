@@ -491,7 +491,7 @@ app_ui = ui.page_fluid(
                 ui.h6("Reference"),
 
                 ui.a(
-                    "CHARM Score Research Paper",
+                    "Click here to see the reference",
                     href="https://pubmed.ncbi.nlm.nih.gov/27832977/",
                     target="_blank"
                 ),
@@ -500,7 +500,7 @@ app_ui = ui.page_fluid(
                 ui.br(),
 
                 ui.div("Produced by Dr. Chin-Chieh Wu"),
-                ui.div("SMART on FHIR Dashboard V3 by Howard")
+                ui.div("UI enhance and implement in SMART on FHIR by Howard")
             ),
 
             # ==============================================
