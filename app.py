@@ -1,5 +1,6 @@
 from shiny import App, ui, render, reactive
 import requests
+from datetime import datetime
 
 # =====================================================
 # CHARM SCORE TABLE
@@ -21,58 +22,66 @@ CHARM_TABLE = {
 
 OBSERVATION_MAP = {
 
-    # Temperature
+    # =============================================
+    # Vital Signs
+    # =============================================
+
     "8310-5": {
         "label": "Temperature",
-        "unit": "°C"
+        "unit": "°C",
+        "category": "Vital Signs"
     },
 
-    # RBC
-    "789-8": {
-        "label": "RBC",
-        "unit": ""
-    },
-
-    # RDW
-    "788-0": {
-        "label": "RDW",
-        "unit": "%"
-    },
-
-    # WBC
-    "6690-2": {
-        "label": "WBC",
-        "unit": "K/uL"
-    },
-
-    # Hemoglobin
-    "718-7": {
-        "label": "Hemoglobin",
-        "unit": "g/dL"
-    },
-
-    # Platelet
-    "777-3": {
-        "label": "Platelet",
-        "unit": "K/uL"
-    },
-
-    # Heart Rate
     "8867-4": {
         "label": "Heart Rate",
-        "unit": "bpm"
+        "unit": "bpm",
+        "category": "Vital Signs"
     },
 
-    # Respiratory Rate
     "9279-1": {
         "label": "Respiratory Rate",
-        "unit": "/min"
+        "unit": "/min",
+        "category": "Vital Signs"
     },
 
-    # SpO2
     "59408-5": {
         "label": "SpO2",
-        "unit": "%"
+        "unit": "%",
+        "category": "Vital Signs"
+    },
+
+    # =============================================
+    # Hematology
+    # =============================================
+
+    "789-8": {
+        "label": "RBC",
+        "unit": "",
+        "category": "Hematology"
+    },
+
+    "6690-2": {
+        "label": "WBC",
+        "unit": "K/uL",
+        "category": "Hematology"
+    },
+
+    "718-7": {
+        "label": "Hemoglobin",
+        "unit": "g/dL",
+        "category": "Hematology"
+    },
+
+    "777-3": {
+        "label": "Platelet",
+        "unit": "K/uL",
+        "category": "Hematology"
+    },
+
+    "788-0": {
+        "label": "RDW",
+        "unit": "%",
+        "category": "Hematology"
     }
 }
 
@@ -83,7 +92,7 @@ OBSERVATION_MAP = {
 app_ui = ui.page_fluid(
 
     # =================================================
-    # URL HASH → SHINY INPUT
+    # HASH PARAM
     # =================================================
 
     ui.tags.script("""
@@ -119,10 +128,10 @@ app_ui = ui.page_fluid(
     ui.tags.style("""
 
     body{
-        background:#f3f6fb;
+        background:#f4f7fb;
         font-family:Arial, Helvetica, sans-serif;
         padding:20px;
-        color:#1f2937;
+        color:#1e293b;
     }
 
     #token,#pid,#fhir,#obs{
@@ -130,23 +139,23 @@ app_ui = ui.page_fluid(
     }
 
     .main-title{
-        font-size:48px;
+        font-size:52px;
         font-weight:900;
-        margin-bottom:6px;
         color:#0f172a;
+        margin-bottom:6px;
     }
 
     .subtitle{
-        color:#64748b;
-        margin-bottom:28px;
         font-size:18px;
+        color:#64748b;
+        margin-bottom:30px;
     }
 
     .custom-sidebar{
         background:white;
         border-radius:24px;
         padding:24px;
-        box-shadow:0 8px 24px rgba(0,0,0,.08);
+        box-shadow:0 10px 24px rgba(0,0,0,.08);
     }
 
     .card{
@@ -154,8 +163,12 @@ app_ui = ui.page_fluid(
         border-radius:24px;
         padding:30px;
         margin-bottom:24px;
-        box-shadow:0 8px 24px rgba(0,0,0,.08);
+        box-shadow:0 10px 24px rgba(0,0,0,.08);
     }
+
+    /* ============================================
+       Patient Header
+    ============================================ */
 
     .patient-header{
         background:linear-gradient(
@@ -171,38 +184,41 @@ app_ui = ui.page_fluid(
     }
 
     .patient-name{
-        font-size:38px;
+        font-size:40px;
         font-weight:900;
-        margin-bottom:10px;
+        margin-bottom:12px;
     }
 
     .patient-meta{
-        font-size:16px;
+        font-size:17px;
         opacity:.92;
     }
 
     .last-update{
-        margin-top:12px;
+        margin-top:14px;
         font-size:14px;
-        opacity:.82;
+        opacity:.85;
     }
+
+    /* ============================================
+       Risk
+    ============================================ */
 
     .risk-center{
         text-align:center;
     }
 
-    .risk-number{
-        font-size:100px;
-        font-weight:900;
-        line-height:1;
-        margin-top:10px;
-        margin-bottom:14px;
-    }
-
     .risk-label{
         font-size:28px;
         font-weight:800;
-        margin-bottom:10px;
+        margin-bottom:8px;
+    }
+
+    .risk-number{
+        font-size:110px;
+        font-weight:900;
+        line-height:1;
+        margin-bottom:18px;
     }
 
     .risk-low{
@@ -218,7 +234,7 @@ app_ui = ui.page_fluid(
     }
 
     .risk-bar{
-        height:20px;
+        height:22px;
         border-radius:999px;
         background:linear-gradient(
             to right,
@@ -226,29 +242,33 @@ app_ui = ui.page_fluid(
             #eab308,
             #ef4444
         );
-        margin-top:30px;
         position:relative;
         overflow:hidden;
+        margin-top:30px;
     }
 
     .risk-marker{
         position:absolute;
         top:-5px;
         width:6px;
-        height:30px;
+        height:32px;
         background:black;
         border-radius:999px;
     }
 
     .clinical-note{
-        margin-top:26px;
+        margin-top:28px;
+        background:#f8fafc;
         padding:20px;
         border-radius:18px;
-        background:#f8fafc;
-        color:#334155;
         font-size:15px;
         line-height:1.7;
+        color:#334155;
     }
+
+    /* ============================================
+       Findings
+    ============================================ */
 
     .finding-item{
         border-radius:18px;
@@ -263,14 +283,20 @@ app_ui = ui.page_fluid(
 
     .finding-positive{
         background:#fef2f2;
-        color:#b91c1c;
         border:1px solid #fecaca;
+        color:#b91c1c;
     }
 
     .finding-negative{
         background:#f8fafc;
-        color:#64748b;
         border:1px solid #e2e8f0;
+        color:#64748b;
+    }
+
+    .finding-missing{
+        background:#fff7ed;
+        border:1px solid #fdba74;
+        color:#c2410c;
     }
 
     .finding-icon{
@@ -279,10 +305,46 @@ app_ui = ui.page_fluid(
     }
 
     .finding-value{
-        margin-top:4px;
+        margin-top:5px;
         font-size:13px;
-        font-weight:500;
         opacity:.9;
+        font-weight:500;
+    }
+
+    .badge{
+        display:inline-block;
+        margin-top:6px;
+        padding:4px 10px;
+        border-radius:999px;
+        font-size:11px;
+        font-weight:700;
+    }
+
+    .badge-auto{
+        background:#dbeafe;
+        color:#1d4ed8;
+    }
+
+    .badge-manual{
+        background:#ede9fe;
+        color:#6d28d9;
+    }
+
+    .badge-missing{
+        background:#ffedd5;
+        color:#c2410c;
+    }
+
+    /* ============================================
+       Summary
+    ============================================ */
+
+    .summary-category{
+        margin-top:30px;
+        margin-bottom:12px;
+        font-size:20px;
+        font-weight:800;
+        color:#0f172a;
     }
 
     .summary-table{
@@ -321,13 +383,37 @@ app_ui = ui.page_fluid(
     """),
 
     # =================================================
-    # HIDDEN INPUTS
+    # INPUTS
     # =================================================
 
     ui.input_text("token",""),
     ui.input_text("pid",""),
     ui.input_text("fhir",""),
     ui.input_text("obs",""),
+
+    # Manual Override
+
+    ui.input_radio_buttons(
+        "manual_no_chills",
+        None,
+        {
+            "auto":"Auto",
+            "yes":"Yes",
+            "no":"No"
+        },
+        selected="auto"
+    ),
+
+    ui.input_radio_buttons(
+        "manual_malignancy",
+        None,
+        {
+            "auto":"Auto",
+            "yes":"Yes",
+            "no":"No"
+        },
+        selected="auto"
+    ),
 
     # =================================================
     # TITLE
@@ -407,6 +493,12 @@ app_ui = ui.page_fluid(
 
                 ui.hr(),
 
+                ui.h5("Top Contributing Factors"),
+
+                ui.output_ui("top_factors"),
+
+                ui.hr(),
+
                 ui.h6("Reference"),
 
                 ui.a(
@@ -424,7 +516,7 @@ app_ui = ui.page_fluid(
             ),
 
             # =========================================
-            # CLINICAL SUMMARY
+            # SUMMARY
             # =========================================
 
             ui.div(
@@ -446,7 +538,7 @@ app_ui = ui.page_fluid(
 def server(input, output, session):
 
     # =================================================
-    # FETCH FHIR DATA
+    # FETCH DATA
     # =================================================
 
     @reactive.Calc
@@ -478,9 +570,9 @@ def server(input, output, session):
 
                 headers=headers,
 
-                verify=False,
+                timeout=10,
 
-                timeout=10
+                verify=False
             )
 
             data["patient"] = patient_response.json()
@@ -493,9 +585,9 @@ def server(input, output, session):
 
                     headers=headers,
 
-                    verify=False,
+                    timeout=10,
 
-                    timeout=10
+                    verify=False
                 )
 
                 data["observation"] = obs_response.json()
@@ -515,17 +607,17 @@ def server(input, output, session):
 
         obs = fhir_data().get("observation", {})
 
-        factors = {
+        result = {
 
-            "no_chills": False,
-            "hypothermia": False,
-            "anemia": False,
-            "rdw": False,
-            "malignancy": False
+            "no_chills": None,
+            "hypothermia": None,
+            "anemia": None,
+            "rdw": None,
+            "malignancy": None
         }
 
         if "component" not in obs:
-            return factors
+            return result
 
         for c in obs["component"]:
 
@@ -541,32 +633,45 @@ def server(input, output, session):
 
             # Temperature
 
-            if (
-                code == "8310-5"
-                and value is not None
-                and value < 36
-            ):
-                factors["hypothermia"] = True
+            if code == "8310-5":
+
+                if value is not None:
+
+                    result["hypothermia"] = value < 36
 
             # RBC
 
-            elif (
-                code == "789-8"
-                and value is not None
-                and value < 4
-            ):
-                factors["anemia"] = True
+            elif code == "789-8":
+
+                if value is not None:
+
+                    result["anemia"] = value < 4
 
             # RDW
 
-            elif (
-                code == "788-0"
-                and value is not None
-                and value > 14.5
-            ):
-                factors["rdw"] = True
+            elif code == "788-0":
 
-        return factors
+                if value is not None:
+
+                    result["rdw"] = value > 14.5
+
+        # =============================================
+        # MANUAL OVERRIDE
+        # =============================================
+
+        if input.manual_no_chills() == "yes":
+            result["no_chills"] = True
+
+        elif input.manual_no_chills() == "no":
+            result["no_chills"] = False
+
+        if input.manual_malignancy() == "yes":
+            result["malignancy"] = True
+
+        elif input.manual_malignancy() == "no":
+            result["malignancy"] = False
+
+        return result
 
     # =================================================
     # SCORE
@@ -576,18 +681,14 @@ def server(input, output, session):
 
         f = factor_state()
 
-        return sum([
+        total = 0
 
-            f["no_chills"],
+        for v in f.values():
 
-            f["hypothermia"],
+            if v is True:
+                total += 1
 
-            f["anemia"],
-
-            f["rdw"],
-
-            f["malignancy"]
-        ])
+        return total
 
     # =================================================
     # PATIENT HEADER
@@ -617,7 +718,7 @@ def server(input, output, session):
 
         gender = patient.get("gender", "Unknown")
 
-        last_updated = obs.get(
+        updated = obs.get(
             "lastUpdated",
             "Unknown"
         )
@@ -635,34 +736,9 @@ def server(input, output, session):
             ),
 
             ui.div(
-                f"Last Updated: {last_updated}",
+                f"Last Updated: {updated}",
                 class_="last-update"
             )
-        )
-
-    # =================================================
-    # PROBABILITY
-    # =================================================
-
-    @output
-    @render.ui
-    def prob():
-
-        p = CHARM_TABLE.get(score(),0)
-
-        cls = (
-            "risk-low"
-            if p < 5 else
-            "risk-mid"
-            if p < 20 else
-            "risk-high"
-        )
-
-        return ui.div(
-
-            f"{p:.2f}%",
-
-            class_=f"risk-number {cls}"
         )
 
     # =================================================
@@ -695,6 +771,31 @@ def server(input, output, session):
                 "HIGH RISK",
                 class_="risk-label risk-high"
             )
+
+    # =================================================
+    # PROB
+    # =================================================
+
+    @output
+    @render.ui
+    def prob():
+
+        p = CHARM_TABLE.get(score(),0)
+
+        cls = (
+            "risk-low"
+            if p < 5 else
+            "risk-mid"
+            if p < 20 else
+            "risk-high"
+        )
+
+        return ui.div(
+
+            f"{p:.2f}%",
+
+            class_=f"risk-number {cls}"
+        )
 
     # =================================================
     # RISK BAR
@@ -759,14 +860,50 @@ def server(input, output, session):
         )
 
     # =================================================
-    # CLINICAL FINDINGS
+    # TOP FACTORS
+    # =================================================
+
+    @output
+    @render.ui
+    def top_factors():
+
+        f = factor_state()
+
+        factors = []
+
+        if f["hypothermia"]:
+            factors.append("• Hypothermia detected")
+
+        if f["anemia"]:
+            factors.append("• Anemia detected")
+
+        if f["rdw"]:
+            factors.append("• Elevated RDW detected")
+
+        if f["malignancy"]:
+            factors.append("• Malignancy history")
+
+        if f["no_chills"]:
+            factors.append("• No chills reported")
+
+        if len(factors) == 0:
+            factors.append("• No major contributing factors")
+
+        return ui.tags.ul(
+
+            *[
+                ui.tags.li(x)
+                for x in factors
+            ]
+        )
+
+    # =================================================
+    # FINDINGS
     # =================================================
 
     @output
     @render.ui
     def clinical_findings():
-
-        obs = fhir_data().get("observation", {})
 
         f = factor_state()
 
@@ -775,7 +912,7 @@ def server(input, output, session):
             (
                 "No Chills",
                 f["no_chills"],
-                "No chills reported"
+                "Manual / Missing Data"
             ),
 
             (
@@ -799,21 +936,56 @@ def server(input, output, session):
             (
                 "Malignancy History",
                 f["malignancy"],
-                "No malignancy history"
+                "Manual / Missing Data"
             )
         ]
 
         cards = []
 
-        for label, abnormal, value in findings:
+        for label, value, detail in findings:
 
-            icon = "✓" if abnormal else "✗"
+            # =========================================
+            # STATUS
+            # =========================================
 
-            cls = (
-                "finding-item finding-positive"
-                if abnormal else
-                "finding-item finding-negative"
-            )
+            if value is True:
+
+                icon = "✓"
+
+                cls = (
+                    "finding-item finding-positive"
+                )
+
+                badge = ui.div(
+                    "AUTO DETECTED",
+                    class_="badge badge-auto"
+                )
+
+            elif value is False:
+
+                icon = "✗"
+
+                cls = (
+                    "finding-item finding-negative"
+                )
+
+                badge = ui.div(
+                    "NORMAL",
+                    class_="badge badge-auto"
+                )
+
+            else:
+
+                icon = "?"
+
+                cls = (
+                    "finding-item finding-missing"
+                )
+
+                badge = ui.div(
+                    "NO DATA",
+                    class_="badge badge-missing"
+                )
 
             cards.append(
 
@@ -822,9 +994,7 @@ def server(input, output, session):
                     {"class":cls},
 
                     ui.div(
-
                         icon,
-
                         class_="finding-icon"
                     ),
 
@@ -833,9 +1003,11 @@ def server(input, output, session):
                         ui.div(label),
 
                         ui.div(
-                            value,
+                            detail,
                             class_="finding-value"
-                        )
+                        ),
+
+                        badge
                     )
                 )
             )
@@ -843,7 +1015,7 @@ def server(input, output, session):
         return ui.div(*cards)
 
     # =================================================
-    # DYNAMIC CLINICAL SUMMARY
+    # SUMMARY
     # =================================================
 
     @output
@@ -856,7 +1028,7 @@ def server(input, output, session):
 
             return ui.div("No clinical data")
 
-        rows = []
+        grouped = {}
 
         for c in obs["component"]:
 
@@ -871,6 +1043,8 @@ def server(input, output, session):
 
             config = OBSERVATION_MAP[code]
 
+            category = config["category"]
+
             label = config["label"]
 
             unit = config["unit"]
@@ -884,58 +1058,77 @@ def server(input, output, session):
 
             display = f"{value} {unit}"
 
-            # =========================================
-            # COLOR LOGIC
-            # =========================================
-
             css = "summary-value summary-normal"
 
-            # Temperature
+            # =========================================
+            # Abnormal Highlight
+            # =========================================
 
             if (
                 code == "8310-5"
                 and value < 36
             ):
-                css = "summary-value summary-abnormal"
-
-            # RBC
+                css = (
+                    "summary-value summary-abnormal"
+                )
 
             elif (
                 code == "789-8"
                 and value < 4
             ):
-                css = "summary-value summary-abnormal"
-
-            # RDW
+                css = (
+                    "summary-value summary-abnormal"
+                )
 
             elif (
                 code == "788-0"
                 and value > 14.5
             ):
-                css = "summary-value summary-warning"
+                css = (
+                    "summary-value summary-warning"
+                )
 
-            rows.append(
+            row = ui.tags.tr(
 
-                ui.tags.tr(
+                ui.tags.td(
+                    label,
+                    class_="summary-label"
+                ),
 
-                    ui.tags.td(
-                        label,
-                        class_="summary-label"
+                ui.tags.td(
+                    display,
+                    class_=css
+                )
+            )
+
+            if category not in grouped:
+                grouped[category] = []
+
+            grouped[category].append(row)
+
+        sections = []
+
+        for category, rows in grouped.items():
+
+            sections.append(
+
+                ui.div(
+
+                    ui.div(
+                        category,
+                        class_="summary-category"
                     ),
 
-                    ui.tags.td(
-                        display,
-                        class_=css
+                    ui.tags.table(
+
+                        {"class":"summary-table"},
+
+                        *rows
                     )
                 )
             )
 
-        return ui.tags.table(
-
-            {"class":"summary-table"},
-
-            *rows
-        )
+        return ui.div(*sections)
 
 # =====================================================
 # APP
