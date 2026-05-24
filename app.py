@@ -355,7 +355,7 @@ app_ui = ui.page_fluid(
 
     ui.div(
         ui.div(
-            "CHARM SMART on FHIR Dashboard V3",
+            "CHARM SMART on FHIR Dashboard",
             class_="main-title"
         ),
 
