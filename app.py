@@ -355,7 +355,7 @@ app_ui = ui.page_fluid(
 
     ui.div(
         ui.div(
-            "CHARM SMART on FHIR Dashboard",
+            "Predict In-hospital Mortality - CHARM Score",
             class_="main-title"
         ),
 
