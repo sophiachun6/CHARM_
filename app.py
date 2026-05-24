@@ -610,17 +610,23 @@ def server(input, output, session):
                 "coding", [{}]
             )[0].get("code")
 
-            if (
-                code == "chills"
-                and c.get("valueInteger") == 1
-            ):
-                defaults["chills"] = "Yes"
-
-            elif (
-                code == "malignancy"
-                and c.get("valueInteger") == 1
-            ):
-                defaults["malignancy"] = "Yes"
+            # chills
+            if code == "chills":
+            
+                if c.get("valueBoolean") is True:
+                    defaults["chills"] = "Yes"
+            
+                elif c.get("valueBoolean") is False:
+                    defaults["chills"] = "No"
+            
+            # malignancy
+            elif code == "malignancy":
+            
+                if c.get("valueBoolean") is True:
+                    defaults["malignancy"] = "Yes"
+            
+                elif c.get("valueBoolean") is False:
+                    defaults["malignancy"] = "No"
 
             elif code == "789-8":
 
