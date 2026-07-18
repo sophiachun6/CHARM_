@@ -1260,11 +1260,20 @@ def server(input, output, session):
 
         patient = fhir_data().get("patient", {})
 
+        obs = fhir_data().get("observation", {})
+        
         gender = patient.get("gender", "Unknown")
-
+        
         birth = patient.get("birthDate", "Unknown")
-
+        
         pid = patient.get("id", "Unknown")
+        
+        last_updated = obs.get(
+            "meta", {}
+        ).get(
+            "lastUpdated",
+            "Unknown"
+        )
 
         return ui.div(
 
@@ -1311,7 +1320,22 @@ def server(input, output, session):
                 ),
 
                 class_="patient-row"
+            ),
+            ui.div(
+
+                ui.span(
+                    "Last Updated",
+                    class_="patient-label"
+                ),
+            
+                ui.span(
+                    last_updated,
+                    class_="patient-value"
+                ),
+            
+                class_="patient-row"
             )
+            
         )
 
     # =============================================
@@ -1510,6 +1534,7 @@ def server(input, output, session):
             text,
             class_="interpretation-box"
         )
+        
     # =============================================
     # CLINICAL SUMMARY
     # =============================================
