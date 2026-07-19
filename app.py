@@ -657,7 +657,7 @@ app_ui = ui.page_fluid(
 
 .summary-table td{
 
-    padding:12px 8px;
+    padding:8px 6px;
 
     vertical-align:middle;
 
@@ -674,26 +674,32 @@ app_ui = ui.page_fluid(
 
     width:38%;
 
-    font-size:15px;
+    font-size:13px;
 
     font-weight:700;
+
+    color:#4b5563;
 
 }
 
 .summary-value{
 
-    font-size:15px;
+    font-size:13px;
 
     font-weight:700;
+
+    color:#111827;
 
 }
 .summary-status{
 
-    fㄇont-size:16px;
+    text-align:right;
+
+    width:80px;
+
+    font-size:13px;
 
     font-weight:700;
-
-    text-align:right;
 
 }
 
