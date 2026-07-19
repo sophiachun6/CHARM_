@@ -226,13 +226,25 @@ app_ui = ui.page_fluid(
     }
     .summary-table{
 
-        width:100%;
+        display:flex;
     
-        border-collapse:collapse;
+        flex-direction:column;
     
-        table-layout:fixed;
-        
-        table-layout:auto;
+        gap:12px;
+    
+    }
+    
+    .summary-row{
+    
+        display:flex;
+    
+        align-items:center;
+    
+        justify-content:space-between;
+    
+        border-bottom:1px solid #eef2f7;
+    
+        padding-bottom:10px;
     
     }
 
@@ -655,15 +667,7 @@ app_ui = ui.page_fluid(
 
 }
 
-.summary-table td{
 
-    padding:8px 6px;
-
-    vertical-align:middle;
-
-    white-space:nowrap;
-
-}
 .summary-table tr:hover{
 
     background:#f8fafc;
@@ -672,9 +676,9 @@ app_ui = ui.page_fluid(
 
 .summary-label{
 
-    width:38%;
+    width:32%;
 
-    font-size:13px;
+    font-size:14px;
 
     font-weight:700;
 
@@ -684,20 +688,22 @@ app_ui = ui.page_fluid(
 
 .summary-value{
 
-    font-size:13px;
+    width:38%;
+
+    font-size:14px;
 
     font-weight:700;
 
-    color:#111827;
+    text-align:center;
 
 }
 .summary-status{
 
+    width:30%;
+
     text-align:right;
 
-    width:80px;
-
-    font-size:13px;
+    font-size:14px;
 
     font-weight:700;
 
@@ -1686,19 +1692,21 @@ def server(input, output, session):
     
             rows.append(
 
-                ui.tags.tr(
+                ui.div(
             
-                    ui.tags.td(
+                    {"class":"summary-row"},
+            
+                    ui.div(
                         label,
                         class_="summary-label"
                     ),
             
-                    ui.tags.td(
-                        f"{value:.2f} {unit}" if isinstance(value,(int,float)) else f"{value} {unit}",
+                    ui.div(
+                        ui.HTML(f"{value:.2f}&nbsp;{unit}"),
                         class_=css
                     ),
             
-                    ui.tags.td(
+                    ui.div(
                         status,
                         class_=f"{css} summary-status"
                     )
@@ -1707,12 +1715,12 @@ def server(input, output, session):
             
             )
     
-        return ui.tags.table(
-    
+        return ui.div(
+
             {"class":"summary-table"},
-    
+        
             *rows
-    
+        
         )
     
 # =====================================================
