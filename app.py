@@ -231,6 +231,8 @@ app_ui = ui.page_fluid(
         border-collapse:collapse;
     
         table-layout:fixed;
+        
+        table-layout:auto;
     
     }
 
@@ -655,9 +657,11 @@ app_ui = ui.page_fluid(
 
 .summary-table td{
 
-    padding:12px 6px;
+    padding:12px 8px;
 
     vertical-align:middle;
+
+    white-space:nowrap;
 
 }
 .summary-table tr:hover{
