@@ -242,7 +242,7 @@ app_ui = ui.page_fluid(
     
         align-items:center;
     
-        padding:10px 0;
+        padding:14px 0;
     
         border-bottom:1px solid #eef2f7;
     
@@ -309,11 +309,13 @@ app_ui = ui.page_fluid(
     }
     .clinical-value{
 
-        font-size:13px;
+        width:33%;
+    
+        font-size:15px;
     
         font-weight:700;
     
-        color:#111827;
+        text-align:center;
     
         white-space:nowrap;
     
@@ -693,7 +695,7 @@ app_ui = ui.page_fluid(
 
     min-width:120px;
 
-    font-size:13px;
+    font-size:15px;
 
     font-weight:700;
 
@@ -718,7 +720,7 @@ app_ui = ui.page_fluid(
 
     text-align:right;
 
-    font-size:13px;
+    font-size:15px;
 
     font-weight:700;
 
