@@ -267,35 +267,38 @@ app_ui = ui.page_fluid(
        Summary Cards
     ========================================= */
 
-    .summary-card {
+    .summary-card{
 
-        background: white;
-
-        border-radius: 16px;
-
-        padding: 16px;
-
-        text-align: center;
-
-        border: 1px solid #e5e7eb;
-
-        box-shadow:
-            0 4px 14px rgba(0,0,0,0.04);
+        background:white;
+    
+        border-radius:18px;
+    
+        padding:24px;
+    
+        text-align:center;
+    
+        border:1px solid #e5e7eb;
+    
+        box-shadow:0 4px 14px rgba(0,0,0,.04);
+    
+        min-height:120px;
+    
     }
 
-    .summary-title {
+    .summary-title{
 
-        font-size: 12px;
-
-        font-weight: 700;
-
-        text-transform: uppercase;
-
-        letter-spacing: .05em;
-
-        color: #9ca3af;
-
-        margin-bottom: 6px;
+        font-size:15px;
+    
+        font-weight:700;
+    
+        text-transform:uppercase;
+    
+        letter-spacing:.04em;
+    
+        color:#9ca3af;
+    
+        margin-bottom:10px;
+    
     }
 
     .summary-value {
@@ -692,15 +695,11 @@ app_ui = ui.page_fluid(
 
 .summary-value{
 
-    width:33%;
+    font-size:42px;
 
-    font-size:13px;
+    font-weight:800;
 
-    font-weight:700;
-
-    text-align:center;
-
-    white-space:nowrap;
+    line-height:1.1;
 
 }
 .summary-status{
@@ -1307,11 +1306,11 @@ def server(input, output, session):
         )
     
         return ui.div(
-    
+
             f"{p:.2f}%",
-    
+        
             class_=f"summary-value {cls}"
-    
+        
         )
     # =============================================
     # PATIENT SUMMARY
