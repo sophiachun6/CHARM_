@@ -224,6 +224,15 @@ app_ui = ui.page_fluid(
         box-shadow:
             0 6px 18px rgba(0,0,0,0.05);
     }
+    .summary-table{
+
+        width:100%;
+    
+        border-collapse:collapse;
+    
+        table-layout:fixed;
+    
+    }
 
     .section-title {
 
@@ -516,15 +525,18 @@ app_ui = ui.page_fluid(
        Patient Card
     ========================================= */
 
-    .patient-row {
+    .patient-row{
 
-        display: flex;
-
-        justify-content: space-between;
-
-        margin-bottom: 10px;
-
-        font-size: 13px;
+        display:flex;
+    
+        justify-content:space-between;
+    
+        align-items:flex-start;
+    
+        margin-bottom:14px;
+    
+        font-size:14px;
+    
     }
 
     .patient-label {
@@ -534,11 +546,16 @@ app_ui = ui.page_fluid(
         font-weight: 600;
     }
 
-    .patient-value {
+    .patient-value{
 
-        color: #111827;
-
-        font-weight: 700;
+        font-weight:700;
+    
+        text-align:right;
+    
+        max-width:150px;
+    
+        word-break:break-word;
+    
     }
 
     /* =========================================
@@ -636,7 +653,7 @@ app_ui = ui.page_fluid(
 
 .summary-table td{
 
-    padding:12px 8px;
+    padding:12px 6px;
 
     vertical-align:middle;
 
@@ -679,6 +696,17 @@ app_ui = ui.page_fluid(
 .summary-normal{
 
     color:#111827;
+
+}
+.summary-status{
+
+    text-align:right;
+
+    width:90px;
+
+    font-size:16px;
+
+    font-weight:700;
 
 }
 
@@ -936,7 +964,7 @@ pre{
                     {"class":"card"},
                 
                     ui.div(
-                        "Clinical Summary",
+                        "Vital Signs & Lab Results",
                         class_="section-title"
                     ),
                 
@@ -944,7 +972,7 @@ pre{
                 
                 ),
                 
-                col_widths=[3,5,4]
+                col_widths=[3,6,3 ]
                 
             ),  
             ui.br(),
@@ -1637,29 +1665,26 @@ def server(input, output, session):
                     status = "↓ Low"
     
             rows.append(
-    
+
                 ui.tags.tr(
-    
+            
                     ui.tags.td(
                         label,
                         class_="summary-label"
                     ),
-    
+            
                     ui.tags.td(
-                        f"{value} {unit}",
+                        f"{value:.2f} {unit}" if isinstance(value,(int,float)) else f"{value} {unit}",
                         class_=css
                     ),
-    
+            
                     ui.tags.td(
-
                         status,
-                    
                         class_=f"{css} summary-status"
-                    
                     )
-    
+            
                 )
-    
+            
             )
     
         return ui.tags.table(
