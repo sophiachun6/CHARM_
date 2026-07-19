@@ -548,13 +548,15 @@ app_ui = ui.page_fluid(
 
     .patient-value{
 
+        color:#111827;
+    
         font-weight:700;
+    
+        font-size:13px;
     
         text-align:right;
     
-        max-width:150px;
-    
-        word-break:break-word;
+        white-space:nowrap;
     
     }
 
@@ -666,11 +668,9 @@ app_ui = ui.page_fluid(
 
 .summary-label{
 
-    width:30%;
+    width:38%;
 
-    font-size:16px;
-
-    color:#4b5563;
+    font-size:15px;
 
     font-weight:700;
 
@@ -678,7 +678,7 @@ app_ui = ui.page_fluid(
 
 .summary-value{
 
-    font-size:20px;
+    font-size:15px;
 
     font-weight:700;
 
@@ -1314,6 +1314,16 @@ def server(input, output, session):
             "Unknown"
         )
 
+        if last_updated != "Unknown":
+        
+            last_updated = (
+                last_updated
+                .replace("T", " ")
+                .split(".")[0]
+            )
+
+
+
         return ui.div(
 
             ui.div(
@@ -1622,7 +1632,7 @@ def server(input, output, session):
     
                     css = "summary-value summary-abnormal"
     
-                    status = "↓ Low"
+                    status = "Low"
     
             elif code == "789-8":
     
@@ -1630,7 +1640,7 @@ def server(input, output, session):
     
                     css = "summary-value summary-abnormal"
     
-                    status = "↓ Low"
+                    status = "Low"
     
             elif code == "788-0":
     
@@ -1638,7 +1648,7 @@ def server(input, output, session):
     
                     css = "summary-value summary-warning"
     
-                    status = "↑ High"
+                    status = "High"
     
             elif code == "8867-4":
     
@@ -1646,7 +1656,7 @@ def server(input, output, session):
     
                     css = "summary-value summary-warning"
     
-                    status = "↑ High"
+                    status = "High"
     
             elif code == "9279-1":
     
@@ -1654,7 +1664,7 @@ def server(input, output, session):
     
                     css = "summary-value summary-warning"
     
-                    status = "↑ High"
+                    status = "High"
     
             elif code == "59408-5":
     
