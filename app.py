@@ -307,7 +307,17 @@ app_ui = ui.page_fluid(
 
         font-weight: 800;
     }
+    .clinical-value{
 
+        font-size:13px;
+    
+        font-weight:700;
+    
+        color:#111827;
+    
+        white-space:nowrap;
+    
+    }
     /* =========================================
        Risk Colors
     ========================================= */
@@ -1645,7 +1655,7 @@ def server(input, output, session):
             if value is None:
                 continue
     
-            css = "summary-value summary-normal"
+            css = "clinical-value summary-normal"
     
             status = "Normal"
     
@@ -1653,7 +1663,7 @@ def server(input, output, session):
     
                 if value < 36:
     
-                    css = "summary-value summary-abnormal"
+                    css = "clinical-value summary-warning"
     
                     status = "Low"
     
@@ -1661,7 +1671,7 @@ def server(input, output, session):
     
                 if value < 4:
     
-                    css = "summary-value summary-abnormal"
+                    css = "clinical-value summary-abnormal"
     
                     status = "Low"
     
