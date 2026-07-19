@@ -636,11 +636,9 @@ app_ui = ui.page_fluid(
 
 .summary-table td{
 
-    padding:14px;
+    padding:12px 8px;
 
-    border-bottom:1px solid #e5e7eb;
-
-    text-align:left;
+    vertical-align:middle;
 
 }
 .summary-table tr:hover{
@@ -651,9 +649,11 @@ app_ui = ui.page_fluid(
 
 .summary-label{
 
-    width:45%;
+    width:30%;
 
-    color:#6b7280;
+    font-size:16px;
+
+    color:#4b5563;
 
     font-weight:700;
 
@@ -661,7 +661,18 @@ app_ui = ui.page_fluid(
 
 .summary-value{
 
-    font-weight:800;
+    font-size:20px;
+
+    font-weight:700;
+
+}
+.summary-status{
+
+    fㄇont-size:16px;
+
+    font-weight:700;
+
+    text-align:right;
 
 }
 
@@ -1640,8 +1651,11 @@ def server(input, output, session):
                     ),
     
                     ui.tags.td(
+
                         status,
-                        class_=css
+                    
+                        class_=f"{css} summary-status"
+                    
                     )
     
                 )
