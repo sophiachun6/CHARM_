@@ -235,16 +235,16 @@ app_ui = ui.page_fluid(
     }
     
     .summary-row{
+
+        display:grid;
     
-        display:flex;
+        grid-template-columns: 1.8fr 1.2fr .8fr;
     
         align-items:center;
     
-        justify-content:space-between;
+        padding:10px 0;
     
         border-bottom:1px solid #eef2f7;
-    
-        padding-bottom:10px;
     
     }
 
@@ -676,36 +676,44 @@ app_ui = ui.page_fluid(
 
 .summary-label{
 
-    width:32%;
+    width:42%;
 
-    font-size:14px;
+    min-width:120px;
+
+    font-size:13px;
 
     font-weight:700;
 
     color:#4b5563;
 
+    white-space:nowrap;
+
 }
 
 .summary-value{
 
-    width:38%;
+    width:33%;
 
-    font-size:14px;
+    font-size:13px;
 
     font-weight:700;
 
     text-align:center;
 
+    white-space:nowrap;
+
 }
 .summary-status{
 
-    width:30%;
+    width:25%;
 
     text-align:right;
 
-    font-size:14px;
+    font-size:13px;
 
     font-weight:700;
+
+    white-space:nowrap;
 
 }
 
@@ -988,7 +996,7 @@ pre{
                 
                 ),
                 
-                col_widths=[3,6,3 ]
+                col_widths=[3,5,4 ]
                 
             ),  
             ui.br(),
